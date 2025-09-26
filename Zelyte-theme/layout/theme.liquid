@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    {{ content_for_header }}
+
+    <!-- Load my built CSS/JS -->
+    <link rel="stylesheet" href="{{ 'index-DxJDqBZZ.css' | asset_url }}">
+    <script type="module" src="{{ 'index-B7gbcD2K.js' | asset_url }}"></script>
+
+    <title>{{ shop.name }}</title>
+  </head>
+  <body class="template-{{ template.name }}">
+    <header>
+      <a href="{{ routes.root_url }}">{{ shop.name }}</a>
+    </header>
+
+    {{ content_for_layout }}
+
+    <footer>
+      <small>&copy; {{ 'now' | date: '%Y' }} {{ shop.name }}</small>
+    </footer>
+  </body>
+</html>
