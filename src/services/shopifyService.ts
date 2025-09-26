@@ -18,25 +18,26 @@ import {
 } from '../types/shopify';
 
 export class ShopifyService {
-  // Get all products
+  // Get all products with fallback handling
   static async getProducts(first: number = 50): Promise<ShopifyProduct[]> {
     try {
       const data = await shopifyRequest(GET_PRODUCTS_QUERY, { first });
       return data.products.edges.map((edge: any) => edge.node);
     } catch (error) {
-      console.error('Error fetching products:', error);
-      throw error;
+      console.error('Error fetching products from Shopify:', error);
+      // Return empty array as fallback to prevent app crash
+      return [];
     }
   }
 
-  // Get a single product by handle
+  // Get a single product by handle with fallback
   static async getProduct(handle: string): Promise<ShopifyProduct | null> {
     try {
       const data = await shopifyRequest(GET_PRODUCT_QUERY, { handle });
       return data.productByHandle;
     } catch (error) {
-      console.error('Error fetching product:', error);
-      throw error;
+      console.error('Error fetching product from Shopify:', error);
+      return null;
     }
   }
 
@@ -72,20 +73,25 @@ export class ShopifyService {
     }
   }
 
-  // Get or create cart
-  static async getOrCreateCart(): Promise<ShopifyCart> {
-    const storedCartId = localStorage.getItem(CART_STORAGE_KEY);
-    
-    if (storedCartId) {
-      const cart = await this.getCart(storedCartId);
-      if (cart) {
-        return cart;
+  // Get or create cart with fallback
+  static async getOrCreateCart(): Promise<ShopifyCart | null> {
+    try {
+      const storedCartId = localStorage.getItem(CART_STORAGE_KEY);
+      
+      if (storedCartId) {
+        const cart = await this.getCart(storedCartId);
+        if (cart) {
+          return cart;
+        }
+        // If cart doesn't exist, remove from storage and create new one
+        localStorage.removeItem(CART_STORAGE_KEY);
       }
-      // If cart doesn't exist, remove from storage and create new one
-      localStorage.removeItem(CART_STORAGE_KEY);
-    }
 
-    return this.createCart();
+      return await this.createCart();
+    } catch (error) {
+      console.error('Error getting or creating cart:', error);
+      return null;
+    }
   }
 
   // Add items to cart

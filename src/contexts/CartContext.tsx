@@ -33,9 +33,15 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       setIsLoading(true);
       const shopifyCart = await ShopifyService.getOrCreateCart();
-      setCart(shopifyCart);
-      const localItems = ShopifyService.convertCartToLocalItems(shopifyCart);
-      setCartItems(localItems);
+      if (shopifyCart) {
+        setCart(shopifyCart);
+        const localItems = ShopifyService.convertCartToLocalItems(shopifyCart);
+        setCartItems(localItems);
+      } else {
+        // Fallback to empty cart if Shopify is unavailable
+        setCartItems([]);
+        setCart(null);
+      }
     } catch (error) {
       console.error('Error loading cart:', error);
       // Fallback to empty cart
@@ -58,6 +64,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       let currentCart = cart;
       if (!currentCart) {
         currentCart = await ShopifyService.getOrCreateCart();
+        if (!currentCart) {
+          throw new Error('Unable to create cart. Please try again.');
+        }
         setCart(currentCart);
       }
 
@@ -74,7 +83,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       setCartItems(localItems);
     } catch (error) {
       console.error('Error adding to cart:', error);
-      throw error;
+      // Show user-friendly error message
+      alert('Unable to add item to cart. Please check your connection and try again.');
     } finally {
       setIsLoading(false);
     }

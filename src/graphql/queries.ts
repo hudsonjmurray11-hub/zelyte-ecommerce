@@ -1,6 +1,6 @@
 // GraphQL Queries for Shopify Storefront API
 
-// Get all products
+// Get all products with improved error handling
 export const GET_PRODUCTS_QUERY = `
   query getProducts($first: Int!) {
     products(first: $first) {
