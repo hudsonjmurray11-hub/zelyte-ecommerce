@@ -10,14 +10,20 @@ export const SHOPIFY_CONFIG = {
   endpoint: `https://${process.env.REACT_APP_SHOPIFY_DOMAIN || 'wf71ya-p7'}.myshopify.com/api/${process.env.REACT_APP_SHOPIFY_API_VERSION || '2025-07'}/graphql.json`
 };
 
-// Helper function to make GraphQL requests
-export async function shopifyRequest(query: string, variables: Record<string, any> = {}) {
+// Helper function to make GraphQL requests (with optional token)
+export async function shopifyRequest(query: string, variables: Record<string, any> = {}, useToken: boolean = true) {
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+
+  // Only add token if useToken is true and token exists
+  if (useToken && SHOPIFY_CONFIG.storefrontAccessToken) {
+    headers['X-Shopify-Storefront-Access-Token'] = SHOPIFY_CONFIG.storefrontAccessToken;
+  }
+
   const response = await fetch(SHOPIFY_CONFIG.endpoint, {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Shopify-Storefront-Access-Token': SHOPIFY_CONFIG.storefrontAccessToken,
-    },
+    headers,
     body: JSON.stringify({
       query,
       variables,
@@ -44,6 +50,11 @@ export async function shopifyRequest(query: string, variables: Record<string, an
   }
 
   return data.data;
+}
+
+// Helper function for tokenless requests (products, collections, etc.)
+export async function shopifyRequestTokenless(query: string, variables: Record<string, any> = {}) {
+  return shopifyRequest(query, variables, false);
 }
 
 // Cart ID storage key for localStorage

@@ -1,5 +1,5 @@
 // Shopify Storefront API Service
-import { shopifyRequest, CART_STORAGE_KEY } from '../config/shopify';
+import { shopifyRequest, shopifyRequestTokenless, CART_STORAGE_KEY } from '../config/shopify';
 import {
   GET_PRODUCTS_QUERY,
   GET_PRODUCT_QUERY,
@@ -18,10 +18,10 @@ import {
 } from '../types/shopify';
 
 export class ShopifyService {
-  // Get all products with fallback handling
+  // Get all products with fallback handling (tokenless access)
   static async getProducts(first: number = 50): Promise<ShopifyProduct[]> {
     try {
-      const data = await shopifyRequest(GET_PRODUCTS_QUERY, { first });
+      const data = await shopifyRequestTokenless(GET_PRODUCTS_QUERY, { first });
       return data.products.edges.map((edge: any) => edge.node);
     } catch (error) {
       console.error('Error fetching products from Shopify:', error);
@@ -30,10 +30,10 @@ export class ShopifyService {
     }
   }
 
-  // Get a single product by handle with fallback
+  // Get a single product by handle with fallback (tokenless access)
   static async getProduct(handle: string): Promise<ShopifyProduct | null> {
     try {
-      const data = await shopifyRequest(GET_PRODUCT_QUERY, { handle });
+      const data = await shopifyRequestTokenless(GET_PRODUCT_QUERY, { handle });
       return data.productByHandle;
     } catch (error) {
       console.error('Error fetching product from Shopify:', error);
