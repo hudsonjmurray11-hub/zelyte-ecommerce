@@ -39,7 +39,7 @@ const electrolytesPlusCaffeine = [
     rating: 4.9,
     reviews: 1156,
     blurb: 'Classic citrus with a focused kick.',
-    image: '/Zelyte_COCONUT.webp',
+    image: '/Zelyte_Lemon_Lime.png',
     color: 'from-yellow-400 to-orange-500'
   },
   {
