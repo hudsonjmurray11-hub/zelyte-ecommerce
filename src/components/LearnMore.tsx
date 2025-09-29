@@ -258,7 +258,7 @@ const LearnMore = () => {
               <div className="w-20 h-20 bg-gradient-to-r from-green-400 to-teal-500 rounded-full flex items-center justify-center mx-auto mb-6">
                 <Users className="w-10 h-10 text-white" />
               </div>
-              <h3 className="text-2xl font-bold mb-4">Active People</h3>
+              <h3 className="text-2xl font-bold mb-4">Active individuals</h3>
               <p className="text-white/90">
                 Anyone with an active lifestyle who values convenience, quality, and 
                 natural ingredients. From hiking to commuting, Zelyte fits your life.
