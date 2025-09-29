@@ -41,10 +41,10 @@ export class ShopifyService {
     }
   }
 
-  // Create a new cart
+  // Create a new cart (tokenless access)
   static async createCart(): Promise<ShopifyCart> {
     try {
-      const data = await shopifyRequest(CREATE_CART_MUTATION, {
+      const data = await shopifyRequestTokenless(CREATE_CART_MUTATION, {
         input: { lines: [] }
       });
       
@@ -62,10 +62,10 @@ export class ShopifyService {
     }
   }
 
-  // Get cart by ID
+  // Get cart by ID (tokenless access)
   static async getCart(cartId: string): Promise<ShopifyCart | null> {
     try {
-      const data = await shopifyRequest(GET_CART_QUERY, { cartId });
+      const data = await shopifyRequestTokenless(GET_CART_QUERY, { cartId });
       return data.cart;
     } catch (error) {
       console.error('Error fetching cart:', error);
@@ -94,10 +94,10 @@ export class ShopifyService {
     }
   }
 
-  // Add items to cart
+  // Add items to cart (tokenless access)
   static async addToCart(cartId: string, variantId: string, quantity: number = 1): Promise<ShopifyCart> {
     try {
-      const data = await shopifyRequest(ADD_TO_CART_MUTATION, {
+      const data = await shopifyRequestTokenless(ADD_TO_CART_MUTATION, {
         cartId,
         lines: [{ merchandiseId: variantId, quantity }]
       });
@@ -113,10 +113,10 @@ export class ShopifyService {
     }
   }
 
-  // Update cart line quantities
+  // Update cart line quantities (tokenless access)
   static async updateCartLines(cartId: string, lineId: string, quantity: number): Promise<ShopifyCart> {
     try {
-      const data = await shopifyRequest(UPDATE_CART_LINES_MUTATION, {
+      const data = await shopifyRequestTokenless(UPDATE_CART_LINES_MUTATION, {
         cartId,
         lines: [{ id: lineId, quantity }]
       });
@@ -132,10 +132,10 @@ export class ShopifyService {
     }
   }
 
-  // Remove lines from cart
+  // Remove lines from cart (tokenless access)
   static async removeFromCart(cartId: string, lineId: string): Promise<ShopifyCart> {
     try {
-      const data = await shopifyRequest(REMOVE_CART_LINES_MUTATION, {
+      const data = await shopifyRequestTokenless(REMOVE_CART_LINES_MUTATION, {
         cartId,
         lineIds: [lineId]
       });
