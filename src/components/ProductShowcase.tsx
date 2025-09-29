@@ -51,7 +51,7 @@ const electrolytesPlusCaffeine = [
     rating: 4.7,
     reviews: 743,
     blurb: 'Refreshing wintergreen with smooth energy.',
-    image: '/Zelyte_COCONUT.webp',
+    image: '/Zelyte_WINTERGREEN.png',
     color: 'from-green-400 to-emerald-500'
   }
 ];

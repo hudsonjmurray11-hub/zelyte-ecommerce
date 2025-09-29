@@ -150,7 +150,7 @@ export const products: Product[] = [
     caffeineMg: 40,
     servings: 15,
     summary: 'Refreshing wintergreen with smooth energy for a crisp, energizing experience.',
-    images: ['/Zelyte_COCONUT.webp'], // TODO: Add actual wintergreen image
+    images: ['/Zelyte_WINTERGREEN.png'],
     badges: ['No Artificial Flavors', 'Sugar-Free', 'Natural Caffeine'],
     description: 'Experience the crisp, refreshing taste of wintergreen enhanced with natural caffeine. This unique flavor combination delivers both hydration and energy in a smooth, refreshing way. Perfect for those who want a clean, energizing boost without overwhelming sweetness.',
     benefits: [
