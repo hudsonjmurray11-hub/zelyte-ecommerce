@@ -18,3 +18,4 @@ export type Product = {
   slug: string;               // same as id
 };
 
+

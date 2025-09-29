@@ -102,7 +102,7 @@ export const products: Product[] = [
     caffeineMg: 40,
     servings: 15,
     summary: 'Classic citrus with a focused kick - energizing hydration for peak performance.',
-    images: ['/Zelyte_COCONUT.webp'], // TODO: Add actual lemon-lime image
+    images: ['/Zelyte_Lemon_Lime.png'],
     badges: ['No Artificial Flavors', 'Sugar-Free', 'Natural Caffeine'],
     description: 'Power up your day with our Lemon Lime electrolyte blend enhanced with natural caffeine. This classic citrus combination delivers both hydration and energy, perfect for workouts, study sessions, or any time you need a focused boost. The natural caffeine provides sustained energy without the crash.',
     benefits: [
