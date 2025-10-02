@@ -282,8 +282,12 @@ const LearnMore = () => {
 
           <div className="grid md:grid-cols-3 gap-12">
             <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-4xl font-bold text-white">HM</span>
+              <div className="w-32 h-32 rounded-full mx-auto mb-6 overflow-hidden">
+                <img 
+                  src="/Team_Photos/hudson-graduation.jpg" 
+                  alt="Hudson Murray" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Hudson Murray</h3>
               <p className="text-lg font-semibold text-blue-600 mb-4">Founder</p>
