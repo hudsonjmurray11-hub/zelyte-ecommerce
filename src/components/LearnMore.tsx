@@ -309,8 +309,12 @@ const LearnMore = () => {
               </p>
             </div>
             <div className="text-center">
-              <div className="w-32 h-32 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto mb-6 flex items-center justify-center">
-                <span className="text-4xl font-bold text-white">TK</span>
+              <div className="w-32 h-32 rounded-full mx-auto mb-6 overflow-hidden">
+                <img 
+                  src="/Team_Photos/teddy-photo.jpg" 
+                  alt="Thaddeus Krimendahl" 
+                  className="w-full h-full object-cover"
+                />
               </div>
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Thaddeus Krimendahl</h3>
               <p className="text-lg font-semibold text-purple-600 mb-4">Marketing</p>
