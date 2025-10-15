@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Header from './components/Header';
 import Hero from './components/Hero';
 import ProductShowcase from './components/ProductShowcase';
@@ -13,6 +13,8 @@ import ProductDetail from './components/ProductDetail';
 import Profile from './components/Profile';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
+import AdminLogin from './components/Admin/AdminLogin';
+import AdminPanel from './components/Admin/AdminPanel';
 import { CartProvider } from './contexts/CartContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { getProductBySlug } from './data/products';
@@ -24,6 +26,18 @@ function App() {
   const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [currentProductSlug, setCurrentProductSlug] = useState<string | null>(null);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
+
+  // Check if accessing admin route
+  useEffect(() => {
+    const path = window.location.pathname;
+    if (path === '/admin') {
+      const adminStatus = localStorage.getItem('isAdmin') === 'true';
+      setIsAdmin(adminStatus);
+      setShowAdminPanel(true);
+    }
+  }, []);
 
   const handleCartClick = () => {
     setIsCartOpen(true);
@@ -124,6 +138,31 @@ function App() {
     // Start trying to scroll after a brief delay
     setTimeout(scrollToTeam, 200);
   };
+
+  const handleAdminLoginSuccess = () => {
+    setIsAdmin(true);
+  };
+
+  const handleAdminLogout = () => {
+    localStorage.removeItem('isAdmin');
+    setIsAdmin(false);
+    setShowAdminPanel(false);
+    window.location.href = '/';
+  };
+
+  // Admin Panel Route
+  if (showAdminPanel) {
+    if (!isAdmin) {
+      return <AdminLogin onLoginSuccess={handleAdminLoginSuccess} />;
+    }
+    return (
+      <AuthProvider>
+        <CartProvider>
+          <AdminPanel onLogout={handleAdminLogout} />
+        </CartProvider>
+      </AuthProvider>
+    );
+  }
 
   return (
     <AuthProvider>
