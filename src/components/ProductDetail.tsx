@@ -164,9 +164,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
           {/* Image Gallery */}
           <div>
-            <div className="aspect-square bg-white rounded-2xl shadow-lg overflow-hidden mb-4 relative">
-              {/* COMING SOON Badge */}
-              <div className="absolute top-8 right-8 bg-gradient-to-r from-orange-500 to-red-500 text-white text-lg font-bold px-8 py-3 transform rotate-12 shadow-2xl z-10">
+            <div className="aspect-square bg-white rounded-2xl shadow-lg mb-4 relative">
+              {/* COMING SOON Badge - Fully visible, no overflow hidden */}
+              <div className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-lg font-bold px-8 py-3 transform rotate-12 shadow-2xl z-10">
                 COMING SOON
               </div>
               
@@ -357,11 +357,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
               {relatedProducts.map((relatedProduct) => (
                 <div
                   key={relatedProduct.id}
-                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer relative overflow-hidden"
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer relative"
                   onClick={() => onProductClick && onProductClick(relatedProduct.slug)}
                 >
-                  {/* COMING SOON Badge */}
-                  <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-2 transform rotate-12 translate-x-8 translate-y-2 shadow-lg z-10">
+                  {/* COMING SOON Badge - Fully visible */}
+                  <div className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-2 transform rotate-12 shadow-lg z-10">
                     COMING SOON
                   </div>
                   
