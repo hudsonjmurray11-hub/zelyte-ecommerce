@@ -95,6 +95,11 @@ const Purchase = () => {
                   : 'bg-gray-800 hover:bg-gray-700'
               } ${product.popular ? 'ring-4 ring-blue-500' : ''}`}
             >
+              {/* COMING SOON Badge */}
+              <div className="absolute -top-3 -right-3 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold px-6 py-2 transform rotate-12 shadow-2xl z-10">
+                COMING SOON
+              </div>
+              
               {product.popular && (
                 <div className="absolute -top-4 left-1/2 -translate-x-1/2 bg-blue-500 text-white px-6 py-2 rounded-full text-sm font-bold">
                   Most Popular
@@ -204,13 +209,20 @@ const Purchase = () => {
               {selectedFlavors.length} flavor{selectedFlavors.length !== 1 ? 's' : ''} selected
             </p>
           </div>
+          
+          {/* COMING SOON Notice */}
+          <div className="bg-orange-500 border-2 border-orange-400 rounded-lg p-4 mb-4">
+            <p className="text-white font-bold text-lg">🚀 COMING SOON</p>
+            <p className="text-orange-100 text-sm mt-1">Bundles will be available for purchase shortly!</p>
+          </div>
+          
           <button 
-            onClick={handleAddToCart}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-300 transform hover:scale-105 shadow-xl mb-4"
+            disabled
+            className="w-full bg-gray-600 cursor-not-allowed text-gray-300 px-8 py-4 rounded-full font-bold text-lg mb-4 opacity-60"
           >
-            Add to Cart - ${totalPrice.toFixed(2)}
+            Not Available Yet
           </button>
-          <p className="text-gray-400 text-sm">30-day money-back guarantee</p>
+          <p className="text-gray-400 text-sm">Check back soon for our bundle deals!</p>
         </div>
       </div>
     </section>
