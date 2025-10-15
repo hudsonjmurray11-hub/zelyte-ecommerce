@@ -10,12 +10,18 @@ import Cart from './components/Cart';
 import Checkout from './components/Checkout';
 import LearnMore from './components/LearnMore';
 import ProductDetail from './components/ProductDetail';
+import Profile from './components/Profile';
+import Login from './components/Auth/Login';
+import Signup from './components/Auth/Signup';
 import { CartProvider } from './contexts/CartContext';
+import { AuthProvider } from './contexts/AuthContext';
 import { getProductBySlug } from './data/products';
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState('home');
   const [currentProductSlug, setCurrentProductSlug] = useState<string | null>(null);
 
@@ -47,6 +53,28 @@ function App() {
 
   const handleHomeClick = () => {
     setCurrentPage('home');
+  };
+
+  const handleProfileClick = () => {
+    setCurrentPage('profile');
+  };
+
+  const handleLoginClick = () => {
+    setIsLoginOpen(true);
+  };
+
+  const handleSignupClick = () => {
+    setIsSignupOpen(true);
+  };
+
+  const handleSwitchToSignup = () => {
+    setIsLoginOpen(false);
+    setIsSignupOpen(true);
+  };
+
+  const handleSwitchToLogin = () => {
+    setIsSignupOpen(false);
+    setIsLoginOpen(true);
   };
 
   const handleSectionClick = (section: string) => {
@@ -97,91 +125,143 @@ function App() {
     setTimeout(scrollToTeam, 200);
   };
 
-  if (isCheckoutOpen) {
-    return (
-      <CartProvider>
-        <Checkout onBack={handleCheckoutBack} />
-      </CartProvider>
-    );
-  }
-
-  if (currentPage === 'product' && currentProductSlug) {
-    const product = getProductBySlug(currentProductSlug);
-    if (!product) {
-      return (
-        <CartProvider>
-          <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-            <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
-              <p className="text-gray-600 mb-8">The product you're looking for doesn't exist.</p>
-              <button
-                onClick={handleBackToHome}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
-              >
-                Back to Home
-              </button>
-            </div>
-          </div>
-        </CartProvider>
-      );
-    }
-
-    return (
-      <CartProvider>
-        <div className="min-h-screen">
-          <Header onCartClick={handleCartClick} onAboutClick={handleAboutClick} onHomeClick={handleHomeClick} onSectionClick={handleSectionClick} currentPage={currentPage} />
-          <ProductDetail 
-            product={product} 
-            onBack={handleBackToHome} 
-            onProductClick={handleProductClick}
-            onCartClick={handleCartClick}
-            onShopNowClick={() => handleSectionClick('purchase')}
-          />
-          <Footer onContactClick={handleContactClick} onAboutClick={handleAboutClick} />
-          <Cart 
-            isOpen={isCartOpen}
-            onClose={handleCartClose}
-            onProceedToCheckout={handleProceedToCheckout}
-          />
-        </div>
-      </CartProvider>
-    );
-  }
-
-  if (currentPage === 'learn-more') {
-    return (
-      <CartProvider>
-        <div className="min-h-screen">
-          <Header onCartClick={handleCartClick} onAboutClick={handleAboutClick} onHomeClick={handleHomeClick} onSectionClick={handleSectionClick} currentPage={currentPage} />
-          <LearnMore />
-          <Footer onContactClick={handleContactClick} onAboutClick={handleAboutClick} />
-          <Cart 
-            isOpen={isCartOpen}
-            onClose={handleCartClose}
-            onProceedToCheckout={handleProceedToCheckout}
-          />
-        </div>
-      </CartProvider>
-    );
-  }
-
   return (
-    <CartProvider>
-      <div className="min-h-screen">
-        <Header onCartClick={handleCartClick} onAboutClick={handleAboutClick} onHomeClick={handleHomeClick} onSectionClick={handleSectionClick} />
-        <Hero onLearnMoreClick={handleAboutClick} />
-        <ProductShowcase onProductClick={handleProductClick} />
-        <Science />
-        <Testimonials />
-        <Purchase />
-        <Footer />
-        <Cart 
-          isOpen={isCartOpen}
-          onClose={handleCartClose}
-          onProceedToCheckout={handleProceedToCheckout}
-        />
-      </div>
-    </CartProvider>
+    <AuthProvider>
+      <CartProvider>
+        {isCheckoutOpen ? (
+          <Checkout onBack={handleCheckoutBack} />
+        ) : currentPage === 'profile' ? (
+          <div className="min-h-screen">
+            <Header 
+              onCartClick={handleCartClick} 
+              onAboutClick={handleAboutClick} 
+              onHomeClick={handleHomeClick} 
+              onSectionClick={handleSectionClick}
+              onLoginClick={handleLoginClick}
+              onSignupClick={handleSignupClick}
+              onProfileClick={handleProfileClick}
+              currentPage={currentPage}
+            />
+            <div className="pt-20">
+              <Profile />
+            </div>
+            <Footer onContactClick={handleContactClick} onAboutClick={handleAboutClick} />
+            <Cart 
+              isOpen={isCartOpen}
+              onClose={handleCartClose}
+              onProceedToCheckout={handleProceedToCheckout}
+            />
+          </div>
+        ) : currentPage === 'product' && currentProductSlug ? (
+          <>
+            {(() => {
+              const product = getProductBySlug(currentProductSlug);
+              if (!product) {
+                return (
+                  <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                    <div className="text-center">
+                      <h1 className="text-2xl font-bold text-gray-900 mb-4">Product Not Found</h1>
+                      <p className="text-gray-600 mb-8">The product you're looking for doesn't exist.</p>
+                      <button
+                        onClick={handleBackToHome}
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-lg font-semibold"
+                      >
+                        Back to Home
+                      </button>
+                    </div>
+                  </div>
+                );
+              }
+
+              return (
+                <div className="min-h-screen">
+                  <Header 
+                    onCartClick={handleCartClick} 
+                    onAboutClick={handleAboutClick} 
+                    onHomeClick={handleHomeClick} 
+                    onSectionClick={handleSectionClick}
+                    onLoginClick={handleLoginClick}
+                    onSignupClick={handleSignupClick}
+                    onProfileClick={handleProfileClick}
+                    currentPage={currentPage}
+                  />
+                  <ProductDetail 
+                    product={product} 
+                    onBack={handleBackToHome} 
+                    onProductClick={handleProductClick}
+                    onCartClick={handleCartClick}
+                    onShopNowClick={() => handleSectionClick('purchase')}
+                  />
+                  <Footer onContactClick={handleContactClick} onAboutClick={handleAboutClick} />
+                  <Cart 
+                    isOpen={isCartOpen}
+                    onClose={handleCartClose}
+                    onProceedToCheckout={handleProceedToCheckout}
+                  />
+                </div>
+              );
+            })()}
+          </>
+        ) : currentPage === 'learn-more' ? (
+          <div className="min-h-screen">
+            <Header 
+              onCartClick={handleCartClick} 
+              onAboutClick={handleAboutClick} 
+              onHomeClick={handleHomeClick} 
+              onSectionClick={handleSectionClick}
+              onLoginClick={handleLoginClick}
+              onSignupClick={handleSignupClick}
+              onProfileClick={handleProfileClick}
+              currentPage={currentPage}
+            />
+            <LearnMore />
+            <Footer onContactClick={handleContactClick} onAboutClick={handleAboutClick} />
+            <Cart 
+              isOpen={isCartOpen}
+              onClose={handleCartClose}
+              onProceedToCheckout={handleProceedToCheckout}
+            />
+          </div>
+        ) : (
+          <div className="min-h-screen">
+            <Header 
+              onCartClick={handleCartClick} 
+              onAboutClick={handleAboutClick} 
+              onHomeClick={handleHomeClick} 
+              onSectionClick={handleSectionClick}
+              onLoginClick={handleLoginClick}
+              onSignupClick={handleSignupClick}
+              onProfileClick={handleProfileClick}
+            />
+            <Hero onLearnMoreClick={handleAboutClick} />
+            <ProductShowcase onProductClick={handleProductClick} />
+            <Science />
+            <Testimonials />
+            <Purchase />
+            <Footer />
+            <Cart 
+              isOpen={isCartOpen}
+              onClose={handleCartClose}
+              onProceedToCheckout={handleProceedToCheckout}
+            />
+          </div>
+        )}
+
+        {/* Auth Modals */}
+        {isLoginOpen && (
+          <Login 
+            onClose={() => setIsLoginOpen(false)} 
+            onSwitchToSignup={handleSwitchToSignup}
+          />
+        )}
+        {isSignupOpen && (
+          <Signup 
+            onClose={() => setIsSignupOpen(false)} 
+            onSwitchToLogin={handleSwitchToLogin}
+          />
+        )}
+      </CartProvider>
+    </AuthProvider>
   );
 }
 

@@ -1,54 +1,108 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { ShopifyService } from '../services/shopifyService';
-import { LocalCartItem, ShopifyCart } from '../types/shopify';
+import { useAuth } from './AuthContext';
+import { cartService } from '../services/cartService';
+import { OrderItem } from '../config/supabase';
 
-export interface CartItem extends LocalCartItem {}
+export interface CartItem {
+  id: string;
+  name: string;
+  price: number;
+  quantity: number;
+  flavor?: string;
+  bundleType?: string;
+  image?: string;
+  variantId?: string;
+  productId?: string;
+  handle?: string;
+}
 
 interface CartContextType {
   cartItems: CartItem[];
-  cart: ShopifyCart | null;
   isLoading: boolean;
   addToCart: (item: Omit<CartItem, 'quantity'>) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
   updateQuantity: (id: string, quantity: number) => Promise<void>;
+  clearCart: () => Promise<void>;
   getTotalPrice: () => number;
   getTotalItems: () => number;
-  getCheckoutUrl: () => Promise<string>;
   refreshCart: () => Promise<void>;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
+// Local storage key for guest cart persistence
+const LOCAL_CART_STORAGE_KEY = 'zelyte-local-cart';
+
 export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const { user } = useAuth();
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [cart, setCart] = useState<ShopifyCart | null>(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Load cart on component mount
+  // Load cart when user changes or component mounts
   useEffect(() => {
     loadCart();
-  }, []);
+  }, [user]);
+
+  // Sync cart items to storage/database whenever they change
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      syncCart();
+    }
+  }, [cartItems, user]);
 
   const loadCart = async () => {
     try {
       setIsLoading(true);
-      const shopifyCart = await ShopifyService.getOrCreateCart();
-      if (shopifyCart) {
-        setCart(shopifyCart);
-        const localItems = ShopifyService.convertCartToLocalItems(shopifyCart);
-        setCartItems(localItems);
+      
+      if (user) {
+        // Load cart from Supabase for logged-in users
+        const { data } = await cartService.getCart(user.id);
+        
+        if (data && data.items) {
+          setCartItems(data.items as CartItem[]);
+        } else {
+          // Check if there's a local cart to migrate
+          const localCart = localStorage.getItem(LOCAL_CART_STORAGE_KEY);
+          if (localCart) {
+            const parsedCart = JSON.parse(localCart);
+            setCartItems(parsedCart);
+            // Migrate to database
+            await cartService.upsertCart(user.id, parsedCart);
+            // Clear local storage after migration
+            localStorage.removeItem(LOCAL_CART_STORAGE_KEY);
+          } else {
+            setCartItems([]);
+          }
+        }
       } else {
-        // Fallback to empty cart if Shopify is unavailable
-        setCartItems([]);
-        setCart(null);
+        // Load from localStorage for guests
+        const savedCart = localStorage.getItem(LOCAL_CART_STORAGE_KEY);
+        if (savedCart) {
+          const parsedCart = JSON.parse(savedCart);
+          setCartItems(parsedCart);
+        } else {
+          setCartItems([]);
+        }
       }
     } catch (error) {
       console.error('Error loading cart:', error);
-      // Fallback to empty cart
       setCartItems([]);
-      setCart(null);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const syncCart = async () => {
+    if (user) {
+      // Sync to Supabase for logged-in users
+      await cartService.upsertCart(user.id, cartItems as OrderItem[]);
+    } else {
+      // Sync to localStorage for guests
+      if (cartItems.length > 0) {
+        localStorage.setItem(LOCAL_CART_STORAGE_KEY, JSON.stringify(cartItems));
+      } else {
+        localStorage.removeItem(LOCAL_CART_STORAGE_KEY);
+      }
     }
   };
 
@@ -60,31 +114,28 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       setIsLoading(true);
       
-      // If we don't have a cart yet, create one
-      let currentCart = cart;
-      if (!currentCart) {
-        currentCart = await ShopifyService.getOrCreateCart();
-        if (!currentCart) {
-          throw new Error('Unable to create cart. Please try again.');
-        }
-        setCart(currentCart);
-      }
+      setCartItems(prevItems => {
+        // Check if item already exists in cart (by id and flavor)
+        const existingItemIndex = prevItems.findIndex(
+          cartItem => cartItem.id === item.id && cartItem.flavor === item.flavor
+        );
 
-      // Find the variant ID - this is a simplified approach
-      // In a real app, you'd want to match by product handle and variant options
-      const variantId = item.variantId || `gid://shopify/ProductVariant/${item.id}`;
-      
-      // Add to Shopify cart
-      const updatedCart = await ShopifyService.addToCart(currentCart.id, variantId, 1);
-      setCart(updatedCart);
-      
-      // Convert to local items
-      const localItems = ShopifyService.convertCartToLocalItems(updatedCart);
-      setCartItems(localItems);
+        if (existingItemIndex > -1) {
+          // Item exists, increment quantity
+          const newItems = [...prevItems];
+          newItems[existingItemIndex] = {
+            ...newItems[existingItemIndex],
+            quantity: newItems[existingItemIndex].quantity + 1
+          };
+          return newItems;
+        } else {
+          // New item, add to cart
+          return [...prevItems, { ...item, quantity: 1 }];
+        }
+      });
     } catch (error) {
       console.error('Error adding to cart:', error);
-      // Show user-friendly error message
-      alert('Unable to add item to cart. Please check your connection and try again.');
+      alert('Unable to add item to cart. Please try again.');
     } finally {
       setIsLoading(false);
     }
@@ -93,14 +144,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const removeFromCart = async (id: string) => {
     try {
       setIsLoading(true);
-      
-      if (!cart) return;
-      
-      const updatedCart = await ShopifyService.removeFromCart(cart.id, id);
-      setCart(updatedCart);
-      
-      const localItems = ShopifyService.convertCartToLocalItems(updatedCart);
-      setCartItems(localItems);
+      setCartItems(prevItems => prevItems.filter(item => item.id !== id));
     } catch (error) {
       console.error('Error removing from cart:', error);
       throw error;
@@ -113,18 +157,16 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       setIsLoading(true);
       
-      if (!cart) return;
-      
       if (quantity <= 0) {
         await removeFromCart(id);
         return;
       }
       
-      const updatedCart = await ShopifyService.updateCartLines(cart.id, id, quantity);
-      setCart(updatedCart);
-      
-      const localItems = ShopifyService.convertCartToLocalItems(updatedCart);
-      setCartItems(localItems);
+      setCartItems(prevItems => 
+        prevItems.map(item => 
+          item.id === id ? { ...item, quantity } : item
+        )
+      );
     } catch (error) {
       console.error('Error updating quantity:', error);
       throw error;
@@ -133,35 +175,41 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  const getTotalPrice = () => {
-    if (cart) {
-      return parseFloat(cart.cost.totalAmount.amount);
+  const clearCart = async () => {
+    try {
+      setIsLoading(true);
+      setCartItems([]);
+      
+      if (user) {
+        await cartService.clearCart(user.id);
+      } else {
+        localStorage.removeItem(LOCAL_CART_STORAGE_KEY);
+      }
+    } catch (error) {
+      console.error('Error clearing cart:', error);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const getTotalPrice = () => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
   };
 
   const getTotalItems = () => {
-    if (cart) {
-      return cart.totalQuantity;
-    }
     return cartItems.reduce((total, item) => total + item.quantity, 0);
-  };
-
-  const getCheckoutUrl = async () => {
-    return await ShopifyService.getCheckoutUrl();
   };
 
   return (
     <CartContext.Provider value={{
       cartItems,
-      cart,
       isLoading,
       addToCart,
       removeFromCart,
       updateQuantity,
+      clearCart,
       getTotalPrice,
       getTotalItems,
-      getCheckoutUrl,
       refreshCart
     }}>
       {children}
