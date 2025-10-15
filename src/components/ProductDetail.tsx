@@ -164,7 +164,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
           {/* Image Gallery */}
           <div>
-            <div className="aspect-square bg-white rounded-2xl shadow-lg overflow-hidden mb-4">
+            <div className="aspect-square bg-white rounded-2xl shadow-lg overflow-hidden mb-4 relative">
+              {/* COMING SOON Badge */}
+              <div className="absolute top-8 right-8 bg-gradient-to-r from-orange-500 to-red-500 text-white text-lg font-bold px-8 py-3 transform rotate-12 shadow-2xl z-10">
+                COMING SOON
+              </div>
+              
               <img
                 src={product.images[selectedImage]}
                 alt={product.name}
@@ -209,7 +214,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                   </span>
                 )}
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-4">{product.name}</h1>
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
+                {product.name}
+                <span className="ml-4 inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold px-4 py-1 rounded-full shadow-lg">
+                  COMING SOON
+                </span>
+              </h1>
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -292,13 +302,19 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                 </div>
 
                 {/* Add to Cart */}
-                <button
-                  onClick={handleAddToCart}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors duration-200 flex items-center justify-center space-x-2"
-                >
-                  <ShoppingCart className="w-5 h-5" />
-                  <span>Add to Cart - ${(product.price * quantity).toFixed(2)}</span>
-                </button>
+                <div className="space-y-3">
+                  <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-4 text-center">
+                    <p className="text-orange-800 font-bold text-lg">🚀 COMING SOON</p>
+                    <p className="text-orange-600 text-sm mt-1">This product will be available for purchase shortly!</p>
+                  </div>
+                  <button
+                    disabled
+                    className="w-full bg-gray-400 cursor-not-allowed text-white py-4 px-6 rounded-lg font-semibold text-lg opacity-60 flex items-center justify-center space-x-2"
+                  >
+                    <ShoppingCart className="w-5 h-5" />
+                    <span>Not Available Yet</span>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -341,9 +357,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
               {relatedProducts.map((relatedProduct) => (
                 <div
                   key={relatedProduct.id}
-                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer"
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer relative overflow-hidden"
                   onClick={() => onProductClick && onProductClick(relatedProduct.slug)}
                 >
+                  {/* COMING SOON Badge */}
+                  <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-2 transform rotate-12 translate-x-8 translate-y-2 shadow-lg z-10">
+                    COMING SOON
+                  </div>
+                  
                   <div className="aspect-square bg-gray-50 rounded-lg mb-4 overflow-hidden">
                     <img
                       src={relatedProduct.images[0]}

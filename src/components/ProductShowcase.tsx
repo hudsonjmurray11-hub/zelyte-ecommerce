@@ -104,12 +104,17 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
                 <div key={product.id} className="flex flex-col h-full">
                   <div
                     onClick={() => setSelectedProduct(product)}
-                    className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 flex-grow ${
+                    className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 flex-grow relative overflow-hidden ${
                       selectedProduct.id === product.id 
                         ? 'bg-white shadow-xl border-2 border-blue-500' 
                         : 'bg-white/70 hover:bg-white shadow-lg'
                     }`}
                   >
+                    {/* COMING SOON Badge */}
+                    <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-2 transform rotate-12 translate-x-8 translate-y-2 shadow-lg">
+                      COMING SOON
+                    </div>
+                    
                     <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${product.color} mb-4 flex items-center justify-center`}>
                       <span className="text-white font-bold text-lg">
                         {product.name.charAt(0)}
@@ -144,12 +149,17 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
                 <div key={product.id} className="flex flex-col h-full">
                   <div
                     onClick={() => setSelectedProduct(product)}
-                    className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 flex-grow ${
+                    className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 flex-grow relative overflow-hidden ${
                       selectedProduct.id === product.id 
                         ? 'bg-white shadow-xl border-2 border-blue-500' 
                         : 'bg-white/70 hover:bg-white shadow-lg'
                     }`}
                   >
+                    {/* COMING SOON Badge */}
+                    <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-2 transform rotate-12 translate-x-8 translate-y-2 shadow-lg">
+                      COMING SOON
+                    </div>
+                    
                     <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${product.color} mb-4 flex items-center justify-center`}>
                       <span className="text-white font-bold text-lg">
                         {product.name.charAt(0)}
@@ -178,14 +188,20 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
         </div>
 
         <div className="mt-16 text-center space-y-4">
-          <div className="bg-white rounded-2xl p-6 max-w-md mx-auto shadow-lg">
+          <div className="bg-white rounded-2xl p-6 max-w-md mx-auto shadow-lg relative overflow-hidden">
+            {/* COMING SOON Badge */}
+            <div className="absolute top-0 right-0 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold px-6 py-2 transform rotate-12 translate-x-12 translate-y-2 shadow-lg">
+              COMING SOON
+            </div>
+            
             <h3 className="text-xl font-bold text-gray-900 mb-2">{selectedProduct.name}</h3>
             <p className="text-gray-600 mb-4">${selectedProduct.price}</p>
             <button
               onClick={() => handleAddToCart(selectedProduct)}
-              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-colors duration-200"
+              disabled
+              className="w-full bg-gray-400 cursor-not-allowed text-white font-bold py-3 px-6 rounded-xl transition-colors duration-200 opacity-60"
             >
-              Add to Cart
+              Not Available Yet
             </button>
           </div>
         </div>
