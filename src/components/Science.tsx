@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Beaker, Zap, Shield, Droplets, Coffee, Brain } from 'lucide-react';
 import zelyteCoconut from '/Zelyte_COCONUT.webp';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 const benefits = [
   {
@@ -35,6 +36,11 @@ const benefits = [
 
 const Science = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
+  const { isVisible: isElectrolytesHeaderVisible, elementRef: electrolytesHeaderRef } = useScrollAnimation({ threshold: 0.2, delay: 100 });
+  const { isVisible: isBalanceVisible, elementRef: balanceRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
+  const { isVisible: isCaffeineHeaderVisible, elementRef: caffeineHeaderRef } = useScrollAnimation({ threshold: 0.2, delay: 100 });
+  const { isVisible: isCaffeineContentVisible, elementRef: caffeineContentRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -57,7 +63,14 @@ const Science = () => {
   return (
     <section id="science" className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+            isHeaderVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Science-Backed Hydration
           </h2>
@@ -69,7 +82,14 @@ const Science = () => {
 
         {/* Electrolytes Section */}
         <div className="mb-20">
-          <div className="text-center mb-12">
+          <div 
+            ref={electrolytesHeaderRef as React.RefObject<HTMLDivElement>}
+            className={`text-center mb-12 transition-all duration-1000 ease-out ${
+              isElectrolytesHeaderVisible 
+                ? 'opacity-100 translate-y-0' 
+                : 'opacity-0 translate-y-10'
+            }`}
+          >
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Pure Electrolytes
             </h3>
@@ -82,13 +102,13 @@ const Science = () => {
             {benefits.map((benefit, index) => (
               <div
                 key={index}
-                className={`text-center transform transition-all duration-1000 hover:scale-110 ${
+                className={`text-center transform transition-all duration-700 ease-out hover:scale-110 ${
                   isVisible 
                     ? 'translate-y-0 opacity-100' 
                     : 'translate-y-10 opacity-0'
                 }`}
                 style={{ 
-                  transitionDelay: `${index * 200}ms`,
+                  transitionDelay: `${index * 150}ms`,
                 }}
               >
                 <div className={`inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-6 ${benefit.color}`}>
@@ -107,7 +127,14 @@ const Science = () => {
             ))}
           </div>
 
-          <div className="bg-gradient-to-r from-gray-50 to-orange-50 rounded-3xl p-8 md:p-12">
+          <div 
+            ref={balanceRef as React.RefObject<HTMLDivElement>}
+            className={`bg-gradient-to-r from-gray-50 to-orange-50 rounded-3xl p-8 md:p-12 transition-all duration-1000 ease-out ${
+              isBalanceVisible 
+                ? 'opacity-100 translate-y-0 scale-100' 
+                : 'opacity-0 translate-y-10 scale-95'
+            }`}
+          >
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
                 <h4 className="text-3xl font-bold text-gray-900 mb-6">
@@ -159,7 +186,14 @@ const Science = () => {
 
         {/* Electrolytes + Caffeine Section */}
         <div>
-          <div className="text-center mb-12">
+          <div 
+            ref={caffeineHeaderRef as React.RefObject<HTMLDivElement>}
+            className={`text-center mb-12 transition-all duration-1000 ease-out ${
+              isCaffeineHeaderVisible 
+                ? 'opacity-100 translate-y-0' 
+                : 'opacity-0 translate-y-10'
+            }`}
+          >
             <h3 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Electrolytes + Caffeine
             </h3>
@@ -215,7 +249,14 @@ const Science = () => {
             </div>
           </div>
 
-          <div className="bg-gradient-to-r from-blue-900 to-blue-800 rounded-3xl p-8 md:p-12 text-white">
+          <div 
+            ref={caffeineContentRef as React.RefObject<HTMLDivElement>}
+            className={`bg-gradient-to-r from-blue-900 to-blue-800 rounded-3xl p-8 md:p-12 text-white transition-all duration-1000 ease-out ${
+              isCaffeineContentVisible 
+                ? 'opacity-100 translate-y-0 scale-100' 
+                : 'opacity-0 translate-y-10 scale-95'
+            }`}
+          >
             <div className="grid md:grid-cols-2 gap-12 items-center">
               <div>
                 <h4 className="text-3xl font-bold mb-6">

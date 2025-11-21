@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Check, ShoppingCart, Package, Star } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 const products = [
   {
@@ -37,6 +38,11 @@ const Purchase = () => {
   const [selectedFlavors, setSelectedFlavors] = useState(['coconut-citrus']);
   const [quantity, setQuantity] = useState(1);
   const { addToCart } = useCart();
+  const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
+  const { isVisible: isProductsVisible, elementRef: productsRef } = useScrollAnimation({ threshold: 0.1, delay: 100 });
+  const { isVisible: isFlavorsVisible, elementRef: flavorsRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
+  const { isVisible: isFeaturesVisible, elementRef: featuresRef } = useScrollAnimation({ threshold: 0.1, delay: 300 });
+  const { isVisible: isTotalVisible, elementRef: totalRef } = useScrollAnimation({ threshold: 0.1, delay: 400 });
 
   const flavors = [
     { id: 'coconut-citrus', name: 'Coconut Citrus', category: 'Electrolytes', color: 'bg-blue-900' },
@@ -75,7 +81,14 @@ const Purchase = () => {
   return (
     <section id="purchase" className="py-20 bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+            isHeaderVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
             Fuel Your Performance
           </h2>
@@ -84,8 +97,15 @@ const Purchase = () => {
           </p>
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-8 mb-12 max-w-6xl mx-auto">
-          {products.map((product) => (
+        <div 
+          ref={productsRef as React.RefObject<HTMLDivElement>}
+          className={`grid lg:grid-cols-3 gap-8 mb-12 max-w-6xl mx-auto transition-all duration-1000 ease-out ${
+            isProductsVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
+          {products.map((product, index) => (
             <div
               key={product.id}
               onClick={() => setSelectedProduct(product.id)}
@@ -93,7 +113,12 @@ const Purchase = () => {
                 selectedProduct === product.id
                   ? 'bg-gradient-to-b from-blue-500 to-blue-600 shadow-xl'
                   : 'bg-gray-800 hover:bg-gray-700'
-              } ${product.popular ? 'ring-4 ring-blue-500' : ''}`}
+              } ${product.popular ? 'ring-4 ring-blue-500' : ''} ${
+                isProductsVisible 
+                  ? 'opacity-100 translate-y-0' 
+                  : 'opacity-0 translate-y-10'
+              }`}
+              style={{ transitionDelay: `${index * 150}ms` }}
             >
               {/* COMING SOON Badge */}
               <div className="absolute -top-3 -right-3 bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold px-6 py-2 transform rotate-12 shadow-2xl z-10">
@@ -134,7 +159,14 @@ const Purchase = () => {
           ))}
         </div>
 
-        <div className="bg-gray-800 rounded-2xl p-8 mb-12 max-w-4xl mx-auto">
+        <div 
+          ref={flavorsRef as React.RefObject<HTMLDivElement>}
+          className={`bg-gray-800 rounded-2xl p-8 mb-12 max-w-4xl mx-auto transition-all duration-1000 ease-out ${
+            isFlavorsVisible 
+              ? 'opacity-100 translate-y-0 scale-100' 
+              : 'opacity-0 translate-y-10 scale-95'
+          }`}
+        >
           <h3 className="text-2xl font-bold mb-6 text-center">
             Choose Your Flavors
           </h3>
@@ -182,7 +214,14 @@ const Purchase = () => {
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-8 mb-12">
+        <div 
+          ref={featuresRef as React.RefObject<HTMLDivElement>}
+          className={`grid md:grid-cols-3 gap-8 mb-12 transition-all duration-1000 ease-out ${
+            isFeaturesVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
           <div className="text-center">
             <Package className="w-12 h-12 text-blue-500 mx-auto mb-4" />
             <h4 className="text-xl font-bold mb-2">Free Shipping</h4>
@@ -200,7 +239,14 @@ const Purchase = () => {
           </div>
         </div>
 
-        <div className="text-center bg-gray-800 rounded-2xl p-8 max-w-md mx-auto">
+        <div 
+          ref={totalRef as React.RefObject<HTMLDivElement>}
+          className={`text-center bg-gray-800 rounded-2xl p-8 max-w-md mx-auto transition-all duration-1000 ease-out ${
+            isTotalVisible 
+              ? 'opacity-100 translate-y-0 scale-100' 
+              : 'opacity-0 translate-y-10 scale-95'
+          }`}
+        >
           <div className="mb-6">
             <div className="text-3xl font-bold text-blue-400 mb-2">
               Total: ${totalPrice.toFixed(2)}

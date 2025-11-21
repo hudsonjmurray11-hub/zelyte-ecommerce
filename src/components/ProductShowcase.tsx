@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Star, Zap, ShoppingCart } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 const electrolytes = [
   {
@@ -63,6 +64,9 @@ interface ProductShowcaseProps {
 const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => {
   const [selectedProduct, setSelectedProduct] = useState(electrolytes[0]);
   const { addToCart } = useCart();
+  const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
+  const { isVisible: isElectrolytesVisible, elementRef: electrolytesRef } = useScrollAnimation({ threshold: 0.1, delay: 100 });
+  const { isVisible: isCaffeineVisible, elementRef: caffeineRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
 
   const handleAddToCart = async (product: any) => {
     try {
@@ -86,7 +90,14 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
   return (
     <section id="products" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+            isHeaderVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Perfect Hydration, Every Flavor
           </h2>
@@ -97,11 +108,27 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
 
         <div className="space-y-16">
           {/* Electrolytes Section */}
-          <div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">Electrolytes</h3>
+          <div ref={electrolytesRef as React.RefObject<HTMLDivElement>}>
+            <h3 
+              className={`text-3xl font-bold text-gray-900 mb-8 text-center transition-all duration-1000 ease-out ${
+                isElectrolytesVisible 
+                  ? 'opacity-100 translate-y-0' 
+                  : 'opacity-0 translate-y-10'
+              }`}
+            >
+              Electrolytes
+            </h3>
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {electrolytes.map((product) => (
-                <div key={product.id} className="flex flex-col h-full">
+              {electrolytes.map((product, index) => (
+                <div 
+                  key={product.id} 
+                  className={`flex flex-col h-full transition-all duration-700 ease-out ${
+                    isElectrolytesVisible 
+                      ? 'opacity-100 translate-y-0' 
+                      : 'opacity-0 translate-y-10'
+                  }`}
+                  style={{ transitionDelay: `${index * 150}ms` }}
+                >
                   <div
                     onClick={() => setSelectedProduct(product)}
                     className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 flex-grow ${
@@ -137,11 +164,27 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
           </div>
 
           {/* Electrolytes + Caffeine Section */}
-          <div>
-            <h3 className="text-3xl font-bold text-gray-900 mb-8 text-center">Electrolytes + Caffeine</h3>
+          <div ref={caffeineRef as React.RefObject<HTMLDivElement>}>
+            <h3 
+              className={`text-3xl font-bold text-gray-900 mb-8 text-center transition-all duration-1000 ease-out ${
+                isCaffeineVisible 
+                  ? 'opacity-100 translate-y-0' 
+                  : 'opacity-0 translate-y-10'
+              }`}
+            >
+              Electrolytes + Caffeine
+            </h3>
             <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-              {electrolytesPlusCaffeine.map((product) => (
-                <div key={product.id} className="flex flex-col h-full">
+              {electrolytesPlusCaffeine.map((product, index) => (
+                <div 
+                  key={product.id} 
+                  className={`flex flex-col h-full transition-all duration-700 ease-out ${
+                    isCaffeineVisible 
+                      ? 'opacity-100 translate-y-0' 
+                      : 'opacity-0 translate-y-10'
+                  }`}
+                  style={{ transitionDelay: `${index * 150}ms` }}
+                >
                   <div
                     onClick={() => setSelectedProduct(product)}
                     className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 flex-grow ${

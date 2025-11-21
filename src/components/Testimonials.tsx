@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { useScrollAnimation } from '../hooks/useScrollAnimation';
 
 const testimonials = [
   {
@@ -39,6 +40,8 @@ const testimonials = [
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
+  const { isVisible: isCarouselVisible, elementRef: carouselRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
 
   useEffect(() => {
     if (!isAutoPlaying) return;
@@ -63,7 +66,14 @@ const Testimonials = () => {
   return (
     <section id="testimonials" className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50">
       <div className="max-w-7xl mx-auto px-6">
-        <div className="text-center mb-16">
+        <div 
+          ref={headerRef as React.RefObject<HTMLDivElement>}
+          className={`text-center mb-16 transition-all duration-1000 ease-out ${
+            isHeaderVisible 
+              ? 'opacity-100 translate-y-0' 
+              : 'opacity-0 translate-y-10'
+          }`}
+        >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Loved by Athletes
           </h2>
@@ -72,7 +82,14 @@ const Testimonials = () => {
           </p>
         </div>
 
-        <div className="relative max-w-4xl mx-auto">
+        <div 
+          ref={carouselRef as React.RefObject<HTMLDivElement>}
+          className={`relative max-w-4xl mx-auto transition-all duration-1000 ease-out ${
+            isCarouselVisible 
+              ? 'opacity-100 translate-y-0 scale-100' 
+              : 'opacity-0 translate-y-10 scale-95'
+          }`}
+        >
           <div className="overflow-hidden rounded-3xl bg-white shadow-2xl">
             <div 
               className="flex transition-transform duration-500 ease-in-out"
