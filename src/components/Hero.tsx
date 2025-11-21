@@ -41,7 +41,7 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto animate-fade-in-up delay-600">
-            Premium electrolyte tins crafted with natural flavors and science-backed hydration
+            Premium electrolyte pouches crafted with natural flavors and science-backed hydration
           </p>
         </div>
 
