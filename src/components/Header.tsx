@@ -13,6 +13,7 @@ interface HeaderProps {
   onSignupClick?: () => void;
   onProfileClick?: () => void;
   currentPage?: string;
+  onAdminClick?: () => void;
 }
 
 const Header: React.FC<HeaderProps> = ({ 
@@ -23,13 +24,15 @@ const Header: React.FC<HeaderProps> = ({
   onLoginClick,
   onSignupClick,
   onProfileClick,
-  currentPage 
+  currentPage,
+  onAdminClick
 }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { getTotalItems } = useCart();
   const { user, signOut } = useAuth();
+  const isAdmin = localStorage.getItem('isAdmin') === 'true';
 
   useEffect(() => {
     const handleScroll = () => {
@@ -160,6 +163,18 @@ const Header: React.FC<HeaderProps> = ({
                       <Package className="w-4 h-4" />
                       <span>My Orders</span>
                     </button>
+                    {isAdmin && onAdminClick && (
+                      <button
+                        onClick={() => {
+                          onAdminClick();
+                          setIsUserMenuOpen(false);
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 flex items-center space-x-2"
+                      >
+                        <User className="w-4 h-4" />
+                        <span>Admin Panel</span>
+                      </button>
+                    )}
                     <button
                       onClick={handleSignOut}
                       className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center space-x-2"
@@ -266,6 +281,18 @@ const Header: React.FC<HeaderProps> = ({
                       <Package className="w-4 h-4" />
                       <span>My Orders</span>
                     </button>
+                    {isAdmin && onAdminClick && (
+                      <button
+                        onClick={() => {
+                          onAdminClick();
+                          setIsMobileMenuOpen(false);
+                        }}
+                        className="w-full text-left py-2 text-blue-600 hover:text-blue-700 transition-colors flex items-center space-x-2"
+                      >
+                        <User className="w-4 h-4" />
+                        <span>Admin Panel</span>
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         handleSignOut();

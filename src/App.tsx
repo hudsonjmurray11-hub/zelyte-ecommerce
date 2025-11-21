@@ -31,13 +31,35 @@ function App() {
 
   // Check if accessing admin route
   useEffect(() => {
-    const path = window.location.pathname;
-    if (path === '/admin') {
-      const adminStatus = localStorage.getItem('isAdmin') === 'true';
-      setIsAdmin(adminStatus);
-      setShowAdminPanel(true);
-    }
-  }, []);
+    const checkAdminRoute = () => {
+      const path = window.location.pathname;
+      if (path === '/admin' || path === '/admin/') {
+        const adminStatus = localStorage.getItem('isAdmin') === 'true';
+        setIsAdmin(adminStatus);
+        setShowAdminPanel(true);
+      } else if (showAdminPanel && path !== '/admin' && path !== '/admin/') {
+        setShowAdminPanel(false);
+      }
+    };
+
+    // Check on mount
+    checkAdminRoute();
+
+    // Listen for popstate (back/forward buttons)
+    window.addEventListener('popstate', checkAdminRoute);
+
+    // Listen for hashchange as well
+    window.addEventListener('hashchange', checkAdminRoute);
+
+    // Check periodically in case of direct navigation
+    const interval = setInterval(checkAdminRoute, 500);
+
+    return () => {
+      window.removeEventListener('popstate', checkAdminRoute);
+      window.removeEventListener('hashchange', checkAdminRoute);
+      clearInterval(interval);
+    };
+  }, [showAdminPanel]);
 
   const handleCartClick = () => {
     setIsCartOpen(true);
@@ -150,6 +172,31 @@ function App() {
     window.location.href = '/';
   };
 
+  const navigateToAdmin = () => {
+    window.location.href = '/admin';
+  };
+
+  // Keyboard shortcut to access admin panel from anywhere (Ctrl/Cmd + Shift + A)
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'A') {
+        e.preventDefault();
+        navigateToAdmin();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    
+    // Log admin access info to console (only in development)
+    if (import.meta.env.DEV) {
+      console.log('%c🔐 Admin Panel Access', 'color: #3b82f6; font-weight: bold; font-size: 14px;');
+      console.log('%cPress Ctrl+Shift+A (or Cmd+Shift+A on Mac) to access admin panel from anywhere', 'color: #6b7280;');
+      console.log('%cOr navigate to: /admin', 'color: #6b7280;');
+    }
+    
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, []);
+
   // Admin Panel Route
   if (showAdminPanel) {
     if (!isAdmin) {
@@ -180,6 +227,7 @@ function App() {
               onSignupClick={handleSignupClick}
               onProfileClick={handleProfileClick}
               currentPage={currentPage}
+              onAdminClick={navigateToAdmin}
             />
             <div className="pt-20">
               <Profile />
@@ -252,6 +300,7 @@ function App() {
               onSignupClick={handleSignupClick}
               onProfileClick={handleProfileClick}
               currentPage={currentPage}
+              onAdminClick={navigateToAdmin}
             />
             <LearnMore />
             <Footer onContactClick={handleContactClick} onAboutClick={handleAboutClick} />
