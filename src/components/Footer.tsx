@@ -31,9 +31,9 @@ const Footer: React.FC<FooterProps> = ({ onContactClick, onAboutClick }) => {
             <h4 className="text-lg font-bold mb-6">Products</h4>
             <ul className="space-y-3 text-gray-400">
               <li><a href="#" className="hover:text-blue-500 transition-colors">Coconut Citrus</a></li>
-              <li><a href="#" className="hover:text-blue-500 transition-colors">Berry Blast</a></li>
+              <li><a href="#" className="hover:text-blue-500 transition-colors">Peppermint</a></li>
               <li><a href="#" className="hover:text-blue-500 transition-colors">Lemon Lime</a></li>
-              <li><a href="#" className="hover:text-blue-500 transition-colors">Tropical Mango</a></li>
+              <li><a href="#" className="hover:text-blue-500 transition-colors">Wintergreen</a></li>
               <li><a href="#" className="hover:text-blue-500 transition-colors">Bundle Packs</a></li>
             </ul>
           </div>
