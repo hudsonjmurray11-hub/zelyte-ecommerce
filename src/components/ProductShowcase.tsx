@@ -96,11 +96,17 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
   };
 
   const getProductRating = (productId: string, fallbackRating: number) => {
-    return productStats[productId]?.rating || fallbackRating;
+    if (productStats[productId]?.rating && productStats[productId].rating > 0) {
+      return productStats[productId].rating;
+    }
+    return fallbackRating;
   };
 
   const getProductReviews = (productId: string, fallbackReviews: number) => {
-    return productStats[productId]?.reviews || fallbackReviews;
+    if (productStats[productId]?.reviews !== undefined && productStats[productId].reviews > 0) {
+      return productStats[productId].reviews;
+    }
+    return fallbackReviews;
   };
 
   const handleAddToCart = async (product: any) => {

@@ -25,7 +25,14 @@ export const reviewService = {
         .eq('product_id', productId)
         .order('created_at', { ascending: false });
 
-      if (error) throw error;
+      if (error) {
+        // If table doesn't exist, return empty array
+        if (error.code === '42P01' || error.message.includes('does not exist')) {
+          console.log('Reviews table does not exist yet. Run REVIEWS_DATABASE_SCHEMA.sql');
+          return [];
+        }
+        throw error;
+      }
       return data || [];
     } catch (error) {
       console.error('Error fetching reviews:', error);

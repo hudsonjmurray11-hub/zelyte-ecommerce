@@ -76,15 +76,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
     });
   };
 
-  const tabs = [
-    { id: 'description', label: 'Description' },
-    { id: 'benefits', label: 'Benefits' },
-    { id: 'how-to-use', label: 'How to Use' },
-    { id: 'ingredients', label: 'Ingredients' },
-    { id: 'nutrition', label: 'Nutrition Facts' },
-    { id: 'reviews', label: `Reviews (${productStats.reviewCount})` }
-  ];
-
   useEffect(() => {
     document.title = `${product.name} - Zelyte`;
     loadReviews();
@@ -121,6 +112,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   };
 
   const productStats = calculateProductStats();
+
+  const tabs = [
+    { id: 'description', label: 'Description' },
+    { id: 'benefits', label: 'Benefits' },
+    { id: 'how-to-use', label: 'How to Use' },
+    { id: 'ingredients', label: 'Ingredients' },
+    { id: 'nutrition', label: 'Nutrition Facts' },
+    { id: 'reviews', label: `Reviews (${productStats.reviewCount})` }
+  ];
 
   const handleSubmitReview = async () => {
     if (!reviewForm.review_text.trim() || !reviewForm.user_name.trim()) {

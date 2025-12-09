@@ -3,7 +3,6 @@ import { Star, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { productReviewService } from '../services/productReviewService';
 import { ProductReview } from '../services/reviewService';
-import { getAllProducts } from '../data/products';
 
 // Fallback testimonials if no reviews exist
 const fallbackTestimonials = [
