@@ -33,11 +33,13 @@ function App() {
   useEffect(() => {
     const checkAdminRoute = () => {
       const path = window.location.pathname;
-      if (path === '/admin' || path === '/admin/') {
+      const isAdminRoute = path === '/admin' || path === '/admin/' || path.startsWith('/admin');
+      
+      if (isAdminRoute) {
         const adminStatus = localStorage.getItem('isAdmin') === 'true';
         setIsAdmin(adminStatus);
         setShowAdminPanel(true);
-      } else if (showAdminPanel && path !== '/admin' && path !== '/admin/') {
+      } else {
         setShowAdminPanel(false);
       }
     };
@@ -51,15 +53,15 @@ function App() {
     // Listen for hashchange as well
     window.addEventListener('hashchange', checkAdminRoute);
 
-    // Check periodically in case of direct navigation
-    const interval = setInterval(checkAdminRoute, 500);
+    // Check more frequently for direct navigation
+    const interval = setInterval(checkAdminRoute, 100);
 
     return () => {
       window.removeEventListener('popstate', checkAdminRoute);
       window.removeEventListener('hashchange', checkAdminRoute);
       clearInterval(interval);
     };
-  }, [showAdminPanel]);
+  }, []);
 
   const handleCartClick = () => {
     setIsCartOpen(true);
@@ -173,7 +175,15 @@ function App() {
   };
 
   const navigateToAdmin = () => {
-    window.location.href = '/admin';
+    // Use window.location to ensure proper navigation
+    if (window.location.pathname !== '/admin') {
+      window.location.href = '/admin';
+    } else {
+      // If already on /admin, just trigger the check
+      const adminStatus = localStorage.getItem('isAdmin') === 'true';
+      setIsAdmin(adminStatus);
+      setShowAdminPanel(true);
+    }
   };
 
   // Keyboard shortcut to access admin panel from anywhere (Ctrl/Cmd + Shift + A)
