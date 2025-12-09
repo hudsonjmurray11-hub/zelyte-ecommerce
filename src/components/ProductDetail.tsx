@@ -16,16 +16,47 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [activeTab, setActiveTab] = useState('description');
+  const [promoCode, setPromoCode] = useState('');
+  const [appliedPromoCode, setAppliedPromoCode] = useState<string | null>(null);
+  const [promoError, setPromoError] = useState('');
   const { addToCart, getTotalItems } = useCart();
 
   const relatedProducts = getRelatedProducts(product, 3);
   const pricePerServing = product.price / product.servings;
 
+  // Promo code validation
+  const validPromoCodes: { [key: string]: number } = {
+    'HUDDY': 0.10 // 10% discount
+  };
+
+  const handleApplyPromoCode = () => {
+    const code = promoCode.trim().toUpperCase();
+    if (validPromoCodes[code]) {
+      setAppliedPromoCode(code);
+      setPromoError('');
+    } else {
+      setPromoError('Invalid promo code');
+      setAppliedPromoCode(null);
+    }
+  };
+
+  const handleRemovePromoCode = () => {
+    setAppliedPromoCode(null);
+    setPromoCode('');
+    setPromoError('');
+  };
+
+  // Calculate prices
+  const originalPrice = product.price * quantity;
+  const discountPercent = appliedPromoCode ? validPromoCodes[appliedPromoCode] : 0;
+  const discountAmount = originalPrice * discountPercent;
+  const finalPrice = originalPrice - discountAmount;
+
   const handleAddToCart = () => {
     addToCart({
       id: product.id,
       name: product.name,
-      price: product.price,
+      price: finalPrice / quantity, // Use discounted price per item
       flavor: product.name
     });
   };
@@ -286,19 +317,92 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                   </div>
                 </div>
 
+                {/* Promo Code Section */}
+                <div className="border-t pt-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Promo Code
+                  </label>
+                  {!appliedPromoCode ? (
+                    <div className="flex space-x-2">
+                      <input
+                        type="text"
+                        value={promoCode}
+                        onChange={(e) => {
+                          setPromoCode(e.target.value);
+                          setPromoError('');
+                        }}
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter') {
+                            handleApplyPromoCode();
+                          }
+                        }}
+                        placeholder="Enter promo code"
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                      <button
+                        onClick={handleApplyPromoCode}
+                        className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                      >
+                        Apply
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                      <div className="flex items-center space-x-2">
+                        <Check className="w-5 h-5 text-green-600" />
+                        <span className="text-green-800 font-medium">
+                          Code "{appliedPromoCode}" applied! {discountPercent * 100}% off
+                        </span>
+                      </div>
+                      <button
+                        onClick={handleRemovePromoCode}
+                        className="text-green-600 hover:text-green-800 text-sm font-medium"
+                      >
+                        Remove
+                      </button>
+                    </div>
+                  )}
+                  {promoError && (
+                    <p className="mt-2 text-sm text-red-600">{promoError}</p>
+                  )}
+                </div>
+
                 {/* Price */}
                 <div className="border-t pt-6">
-                  <div className="flex items-baseline space-x-2 mb-2">
-                    <span className="text-3xl font-bold text-gray-900">
-                      ${(product.price * quantity).toFixed(2)}
-                    </span>
-                    <span className="text-gray-600">
-                      (${product.price.toFixed(2)} per tin)
-                    </span>
+                  <div className="space-y-2">
+                    {appliedPromoCode ? (
+                      <>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="text-lg text-gray-500 line-through">
+                            ${originalPrice.toFixed(2)}
+                          </span>
+                          <span className="text-3xl font-bold text-gray-900">
+                            ${finalPrice.toFixed(2)}
+                          </span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            Save ${discountAmount.toFixed(2)}
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          ${(finalPrice / quantity).toFixed(2)} per tin after discount
+                        </p>
+                      </>
+                    ) : (
+                      <>
+                        <div className="flex items-baseline space-x-2 mb-2">
+                          <span className="text-3xl font-bold text-gray-900">
+                            ${originalPrice.toFixed(2)}
+                          </span>
+                          <span className="text-gray-600">
+                            (${product.price.toFixed(2)} per tin)
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          ${pricePerServing.toFixed(2)} per serving • {product.servings} servings per tin
+                        </p>
+                      </>
+                    )}
                   </div>
-                  <p className="text-sm text-gray-600">
-                    ${pricePerServing.toFixed(2)} per serving • {product.servings} servings per tin
-                  </p>
                 </div>
 
                 {/* Add to Cart */}
