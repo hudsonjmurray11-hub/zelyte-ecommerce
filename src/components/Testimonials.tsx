@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Star, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import { productReviewService } from '../services/productReviewService';
+import { ProductReview } from '../services/reviewService';
+import { getAllProducts } from '../data/products';
 
-const testimonials = [
+// Fallback testimonials if no reviews exist
+const fallbackTestimonials = [
   {
     id: 1,
     name: 'Sarah Johnson',
@@ -40,18 +44,60 @@ const testimonials = [
 const Testimonials = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
+  const [loading, setLoading] = useState(true);
   const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
   const { isVisible: isCarouselVisible, elementRef: carouselRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
 
   useEffect(() => {
-    if (!isAutoPlaying) return;
+    loadReviews();
+  }, []);
+
+  const loadReviews = async () => {
+    try {
+      setLoading(true);
+      const allReviews = await productReviewService.getAllReviews(10);
+      
+      if (allReviews.length > 0) {
+        setReviews(allReviews);
+      } else {
+        // Use fallback if no reviews exist
+        setReviews([]);
+      }
+    } catch (error) {
+      console.error('Error loading reviews:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Convert database reviews to testimonial format
+  const getTestimonials = () => {
+    if (reviews.length > 0) {
+      return reviews.map((review, index) => ({
+        id: review.id || `review-${index}`,
+        name: review.user_name,
+        role: 'Customer',
+        avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(review.user_name)}&background=3b82f6&color=fff&size=150`,
+        rating: review.rating,
+        text: review.review_text,
+        title: review.title,
+      }));
+    }
+    return fallbackTestimonials;
+  };
+
+  const testimonials = getTestimonials();
+
+  useEffect(() => {
+    if (!isAutoPlaying || testimonials.length === 0) return;
     
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % testimonials.length);
     }, 4000);
 
     return () => clearInterval(interval);
-  }, [isAutoPlaying]);
+  }, [isAutoPlaying, testimonials.length]);
 
   const nextTestimonial = () => {
     setCurrentIndex((prev) => (prev + 1) % testimonials.length);
@@ -82,20 +128,25 @@ const Testimonials = () => {
           </p>
         </div>
 
-        <div 
-          ref={carouselRef as React.RefObject<HTMLDivElement>}
-          className={`relative max-w-4xl mx-auto transition-all duration-1000 ease-out ${
-            isCarouselVisible 
-              ? 'opacity-100 translate-y-0 scale-100' 
-              : 'opacity-0 translate-y-10 scale-95'
-          }`}
-        >
-          <div className="overflow-hidden rounded-3xl bg-white shadow-2xl">
-            <div 
-              className="flex transition-transform duration-500 ease-in-out"
-              style={{ transform: `translateX(-${currentIndex * 100}%)` }}
-            >
-              {testimonials.map((testimonial) => (
+        {loading ? (
+          <div className="flex items-center justify-center py-12">
+            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+          </div>
+        ) : (
+          <div 
+            ref={carouselRef as React.RefObject<HTMLDivElement>}
+            className={`relative max-w-4xl mx-auto transition-all duration-1000 ease-out ${
+              isCarouselVisible 
+                ? 'opacity-100 translate-y-0 scale-100' 
+                : 'opacity-0 translate-y-10 scale-95'
+            }`}
+          >
+            <div className="overflow-hidden rounded-3xl bg-white shadow-2xl">
+              <div 
+                className="flex transition-transform duration-500 ease-in-out"
+                style={{ transform: `translateX(-${currentIndex * 100}%)` }}
+              >
+                {testimonials.map((testimonial) => (
                 <div key={testimonial.id} className="w-full flex-shrink-0 p-8 md:p-12">
                   <div className="flex flex-col items-center text-center">
                     <img
@@ -108,6 +159,9 @@ const Testimonials = () => {
                         <Star key={i} className="w-5 h-5 text-yellow-400 fill-current" />
                       ))}
                     </div>
+                    {testimonial.title && (
+                      <h4 className="text-lg font-semibold text-gray-900 mb-3">{testimonial.title}</h4>
+                    )}
                     <blockquote className="text-xl md:text-2xl text-gray-700 mb-6 leading-relaxed">
                       "{testimonial.text}"
                     </blockquote>
@@ -118,38 +172,43 @@ const Testimonials = () => {
                   </div>
                 </div>
               ))}
+              </div>
             </div>
+
+            {testimonials.length > 1 && (
+              <>
+                <button
+                  onClick={prevTestimonial}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                >
+                  <ChevronLeft className="w-6 h-6 text-gray-600" />
+                </button>
+
+                <button
+                  onClick={nextTestimonial}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
+                >
+                  <ChevronRight className="w-6 h-6 text-gray-600" />
+                </button>
+
+                <div className="flex justify-center mt-8 space-x-2">
+                  {testimonials.map((_, index) => (
+                    <button
+                      key={index}
+                      onClick={() => {
+                        setCurrentIndex(index);
+                        setIsAutoPlaying(false);
+                      }}
+                      className={`w-3 h-3 rounded-full transition-colors ${
+                        index === currentIndex ? 'bg-blue-500' : 'bg-gray-300'
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
-
-          <button
-            onClick={prevTestimonial}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-          >
-            <ChevronLeft className="w-6 h-6 text-gray-600" />
-          </button>
-
-          <button
-            onClick={nextTestimonial}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full shadow-lg flex items-center justify-center hover:bg-gray-50 transition-colors"
-          >
-            <ChevronRight className="w-6 h-6 text-gray-600" />
-          </button>
-
-          <div className="flex justify-center mt-8 space-x-2">
-            {testimonials.map((_, index) => (
-              <button
-                key={index}
-                onClick={() => {
-                  setCurrentIndex(index);
-                  setIsAutoPlaying(false);
-                }}
-                className={`w-3 h-3 rounded-full transition-colors ${
-                  index === currentIndex ? 'bg-blue-500' : 'bg-gray-300'
-                }`}
-              />
-            ))}
-          </div>
-        </div>
+        )}
       </div>
     </section>
   );

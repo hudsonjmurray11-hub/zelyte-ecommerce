@@ -82,7 +82,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
     { id: 'how-to-use', label: 'How to Use' },
     { id: 'ingredients', label: 'Ingredients' },
     { id: 'nutrition', label: 'Nutrition Facts' },
-    { id: 'reviews', label: `Reviews (${reviews.length})` }
+    { id: 'reviews', label: `Reviews (${productStats.reviewCount})` }
   ];
 
   useEffect(() => {
@@ -101,6 +101,26 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
       setLoadingReviews(false);
     }
   };
+
+  // Calculate dynamic rating and review count
+  const calculateProductStats = () => {
+    if (reviews.length === 0) {
+      return {
+        rating: product.rating || 0,
+        reviewCount: product.reviewsCount || 0,
+      };
+    }
+
+    const totalRating = reviews.reduce((sum, review) => sum + review.rating, 0);
+    const averageRating = totalRating / reviews.length;
+
+    return {
+      rating: Math.round(averageRating * 10) / 10,
+      reviewCount: reviews.length,
+    };
+  };
+
+  const productStats = calculateProductStats();
 
   const handleSubmitReview = async () => {
     if (!reviewForm.review_text.trim() || !reviewForm.user_name.trim()) {
@@ -510,14 +530,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                     <Star
                       key={i}
                       className={`w-5 h-5 ${
-                        i < Math.floor(product.rating || 0)
+                        i < Math.floor(productStats.rating)
                           ? 'text-yellow-400 fill-current'
                           : 'text-gray-300'
                       }`}
                     />
                   ))}
                   <span className="ml-2 text-gray-600">
-                    {product.rating} ({product.reviewsCount} reviews)
+                    {productStats.rating.toFixed(1)} ({productStats.reviewCount} {productStats.reviewCount === 1 ? 'review' : 'reviews'})
                   </span>
                 </div>
               </div>
@@ -783,10 +803,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
               "priceCurrency": "USD",
               "availability": "https://schema.org/InStock"
             },
-            "aggregateRating": product.rating && product.reviewsCount ? {
+            "aggregateRating": productStats.rating > 0 && productStats.reviewCount > 0 ? {
               "@type": "AggregateRating",
-              "ratingValue": product.rating,
-              "reviewCount": product.reviewsCount
+              "ratingValue": productStats.rating,
+              "reviewCount": productStats.reviewCount
             } : undefined
           })
         }}

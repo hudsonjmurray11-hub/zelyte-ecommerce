@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Star, Zap, ShoppingCart } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useScrollAnimation } from '../hooks/useScrollAnimation';
+import { productReviewService } from '../services/productReviewService';
+import { getAllProducts } from '../data/products';
 
 const electrolytes = [
   {
@@ -63,10 +65,43 @@ interface ProductShowcaseProps {
 
 const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => {
   const [selectedProduct, setSelectedProduct] = useState(electrolytes[0]);
+  const [productStats, setProductStats] = useState<{ [key: string]: { rating: number; reviews: number } }>({});
   const { addToCart } = useCart();
   const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
   const { isVisible: isElectrolytesVisible, elementRef: electrolytesRef } = useScrollAnimation({ threshold: 0.1, delay: 100 });
   const { isVisible: isCaffeineVisible, elementRef: caffeineRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
+
+  useEffect(() => {
+    loadProductStats();
+  }, []);
+
+  const loadProductStats = async () => {
+    try {
+      const allProducts = getAllProducts();
+      const productIds = allProducts.map(p => p.id);
+      const stats = await productReviewService.getAllProductsReviewStats(productIds);
+      
+      const statsMap: { [key: string]: { rating: number; reviews: number } } = {};
+      Object.entries(stats).forEach(([productId, stat]) => {
+        statsMap[productId] = {
+          rating: stat.averageRating || 0,
+          reviews: stat.totalReviews || 0,
+        };
+      });
+      
+      setProductStats(statsMap);
+    } catch (error) {
+      console.error('Error loading product stats:', error);
+    }
+  };
+
+  const getProductRating = (productId: string, fallbackRating: number) => {
+    return productStats[productId]?.rating || fallbackRating;
+  };
+
+  const getProductReviews = (productId: string, fallbackReviews: number) => {
+    return productStats[productId]?.reviews || fallbackReviews;
+  };
 
   const handleAddToCart = async (product: any) => {
     try {
@@ -145,7 +180,9 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
                     <h4 className="font-bold text-gray-900 mb-2">{product.name}</h4>
                     <div className="flex items-center mb-2">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="ml-1 text-sm text-gray-600">{product.rating} ({product.reviews})</span>
+                      <span className="ml-1 text-sm text-gray-600">
+                        {getProductRating(product.id, product.rating).toFixed(1)} ({getProductReviews(product.id, product.reviews)})
+                      </span>
                     </div>
                     <p className="text-sm text-gray-600 mb-3">{product.blurb}</p>
                     <p className="font-bold text-blue-600">${product.price}</p>
@@ -201,7 +238,9 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
                     <h4 className="font-bold text-gray-900 mb-2">{product.name}</h4>
                     <div className="flex items-center mb-2">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                      <span className="ml-1 text-sm text-gray-600">{product.rating} ({product.reviews})</span>
+                      <span className="ml-1 text-sm text-gray-600">
+                        {getProductRating(product.id, product.rating).toFixed(1)} ({getProductReviews(product.id, product.reviews)})
+                      </span>
                     </div>
                     <p className="text-sm text-gray-600 mb-3">{product.blurb}</p>
                     <p className="font-bold text-blue-600">${product.price}</p>
