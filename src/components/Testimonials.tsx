@@ -56,15 +56,11 @@ const Testimonials = () => {
     try {
       setLoading(true);
       const allReviews = await productReviewService.getAllReviews(10);
-      
-      if (allReviews.length > 0) {
-        setReviews(allReviews);
-      } else {
-        // Use fallback if no reviews exist
-        setReviews([]);
-      }
+      setReviews(allReviews || []);
     } catch (error) {
       console.error('Error loading reviews:', error);
+      // On error, use empty array which will trigger fallback
+      setReviews([]);
     } finally {
       setLoading(false);
     }
@@ -127,19 +123,20 @@ const Testimonials = () => {
           </p>
         </div>
 
-        {loading ? (
-          <div className="flex items-center justify-center py-12">
-            <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
-          </div>
-        ) : (
-          <div 
-            ref={carouselRef as React.RefObject<HTMLDivElement>}
-            className={`relative max-w-4xl mx-auto transition-all duration-1000 ease-out ${
-              isCarouselVisible 
-                ? 'opacity-100 translate-y-0 scale-100' 
-                : 'opacity-0 translate-y-10 scale-95'
-            }`}
-          >
+        <div 
+          ref={carouselRef as React.RefObject<HTMLDivElement>}
+          className={`relative max-w-4xl mx-auto transition-all duration-1000 ease-out ${
+            isCarouselVisible 
+              ? 'opacity-100 translate-y-0 scale-100' 
+              : 'opacity-0 translate-y-10 scale-95'
+          }`}
+        >
+          {loading ? (
+            <div className="flex items-center justify-center py-12 bg-white rounded-3xl">
+              <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
+            </div>
+          ) : (
+            <>
             <div className="overflow-hidden rounded-3xl bg-white shadow-2xl">
               <div 
                 className="flex transition-transform duration-500 ease-in-out"
@@ -206,8 +203,9 @@ const Testimonials = () => {
                 </div>
               </>
             )}
-          </div>
-        )}
+            </>
+          )}
+        </div>
       </div>
     </section>
   );
