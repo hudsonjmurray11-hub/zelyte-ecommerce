@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Star, ShoppingCart, ArrowLeft, Check, Zap, Coffee, Brain } from 'lucide-react';
+import { Star, ShoppingCart, ArrowLeft, Check, Zap, Coffee, Brain, MessageSquare, ThumbsUp, Send } from 'lucide-react';
 import { Product } from '../types/product';
 import { getRelatedProducts } from '../data/products';
 import { useCart } from '../contexts/CartContext';
+import { reviewService, ProductReview } from '../services/reviewService';
+import { useAuth } from '../contexts/AuthContext';
 
 interface ProductDetailProps {
   product: Product;
@@ -19,7 +21,18 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromoCode, setAppliedPromoCode] = useState<string | null>(null);
   const [promoError, setPromoError] = useState('');
+  const [reviews, setReviews] = useState<ProductReview[]>([]);
+  const [loadingReviews, setLoadingReviews] = useState(false);
+  const [showReviewForm, setShowReviewForm] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    rating: 5,
+    title: '',
+    review_text: '',
+    user_name: '',
+  });
+  const [submittingReview, setSubmittingReview] = useState(false);
   const { addToCart, getTotalItems } = useCart();
+  const { user } = useAuth();
 
   const relatedProducts = getRelatedProducts(product, 3);
   const pricePerServing = product.price / product.servings;
@@ -68,12 +81,61 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
     { id: 'benefits', label: 'Benefits' },
     { id: 'how-to-use', label: 'How to Use' },
     { id: 'ingredients', label: 'Ingredients' },
-    { id: 'nutrition', label: 'Nutrition Facts' }
+    { id: 'nutrition', label: 'Nutrition Facts' },
+    { id: 'reviews', label: `Reviews (${reviews.length})` }
   ];
 
   useEffect(() => {
     document.title = `${product.name} - Zelyte`;
-  }, [product.name]);
+    loadReviews();
+  }, [product.id]);
+
+  const loadReviews = async () => {
+    setLoadingReviews(true);
+    try {
+      const data = await reviewService.getProductReviews(product.id);
+      setReviews(data);
+    } catch (error) {
+      console.error('Error loading reviews:', error);
+    } finally {
+      setLoadingReviews(false);
+    }
+  };
+
+  const handleSubmitReview = async () => {
+    if (!reviewForm.review_text.trim() || !reviewForm.user_name.trim()) {
+      alert('Please fill in all required fields');
+      return;
+    }
+
+    setSubmittingReview(true);
+    try {
+      await reviewService.createReview({
+        product_id: product.id,
+        user_name: reviewForm.user_name,
+        user_email: user?.email || undefined,
+        rating: reviewForm.rating,
+        title: reviewForm.title || undefined,
+        review_text: reviewForm.review_text,
+        verified_purchase: false,
+      });
+      
+      setReviewForm({ rating: 5, title: '', review_text: '', user_name: '' });
+      setShowReviewForm(false);
+      loadReviews();
+      alert('Review submitted successfully!');
+    } catch (error) {
+      console.error('Error submitting review:', error);
+      alert('Error submitting review. Please try again.');
+    } finally {
+      setSubmittingReview(false);
+    }
+  };
+
+  const handleMarkHelpful = async (reviewId: string) => {
+    await reviewService.markHelpful(reviewId);
+    loadReviews();
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -131,6 +193,195 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
           </div>
         ) : (
           <p className="text-gray-600">Nutrition facts not available.</p>
+        );
+      case 'reviews':
+        return (
+          <div className="space-y-6">
+            {/* Review Summary */}
+            <div className="border-b border-gray-200 pb-6">
+              <div className="flex items-center justify-between mb-4">
+                <div>
+                  <h3 className="text-2xl font-bold text-gray-900">Customer Reviews</h3>
+                  <div className="flex items-center space-x-2 mt-2">
+                    <div className="flex items-center">
+                      {[...Array(5)].map((_, i) => (
+                        <Star
+                          key={i}
+                          className={`w-5 h-5 ${
+                            i < Math.floor(product.rating || 0)
+                              ? 'text-yellow-400 fill-current'
+                              : 'text-gray-300'
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    <span className="text-gray-600">
+                      {product.rating?.toFixed(1)} out of 5 ({reviews.length} {reviews.length === 1 ? 'review' : 'reviews'})
+                    </span>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowReviewForm(!showReviewForm)}
+                  className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  <MessageSquare className="w-4 h-4" />
+                  <span>Write a Review</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Review Form */}
+            {showReviewForm && (
+              <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
+                <h4 className="text-lg font-semibold text-gray-900 mb-4">Write Your Review</h4>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Your Name *</label>
+                    <input
+                      type="text"
+                      value={reviewForm.user_name}
+                      onChange={(e) => setReviewForm({ ...reviewForm, user_name: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Enter your name"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Rating *</label>
+                    <div className="flex items-center space-x-2">
+                      {[1, 2, 3, 4, 5].map((rating) => (
+                        <button
+                          key={rating}
+                          type="button"
+                          onClick={() => setReviewForm({ ...reviewForm, rating })}
+                          className="focus:outline-none"
+                        >
+                          <Star
+                            className={`w-8 h-8 ${
+                              rating <= reviewForm.rating
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Review Title (optional)</label>
+                    <input
+                      type="text"
+                      value={reviewForm.title}
+                      onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Summarize your experience"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">Your Review *</label>
+                    <textarea
+                      value={reviewForm.review_text}
+                      onChange={(e) => setReviewForm({ ...reviewForm, review_text: e.target.value })}
+                      rows={4}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                      placeholder="Share your experience with this product..."
+                    />
+                  </div>
+                  <div className="flex justify-end space-x-3">
+                    <button
+                      onClick={() => {
+                        setShowReviewForm(false);
+                        setReviewForm({ rating: 5, title: '', review_text: '', user_name: '' });
+                      }}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      onClick={handleSubmitReview}
+                      disabled={submittingReview || !reviewForm.review_text.trim() || !reviewForm.user_name.trim()}
+                      className="flex items-center space-x-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400"
+                    >
+                      <Send className="w-4 h-4" />
+                      <span>{submittingReview ? 'Submitting...' : 'Submit Review'}</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Reviews List */}
+            {loadingReviews ? (
+              <div className="text-center py-12">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                <p className="mt-4 text-gray-600">Loading reviews...</p>
+              </div>
+            ) : reviews.length === 0 ? (
+              <div className="text-center py-12">
+                <MessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+                <p className="text-gray-600">No reviews yet. Be the first to review this product!</p>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                {reviews.map((review) => (
+                  <div key={review.id} className="border-b border-gray-200 pb-6 last:border-b-0">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <div className="flex items-center space-x-3 mb-2">
+                          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
+                            <span className="text-blue-600 font-semibold">
+                              {review.user_name.charAt(0).toUpperCase()}
+                            </span>
+                          </div>
+                          <div>
+                            <p className="font-semibold text-gray-900">{review.user_name}</p>
+                            <div className="flex items-center space-x-2">
+                              <div className="flex items-center">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star
+                                    key={i}
+                                    className={`w-4 h-4 ${
+                                      i < review.rating
+                                        ? 'text-yellow-400 fill-current'
+                                        : 'text-gray-300'
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                              <span className="text-sm text-gray-500">
+                                {new Date(review.created_at || '').toLocaleDateString('en-US', {
+                                  year: 'numeric',
+                                  month: 'long',
+                                  day: 'numeric',
+                                })}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                        {review.title && (
+                          <h5 className="font-semibold text-gray-900 mb-2">{review.title}</h5>
+                        )}
+                        <p className="text-gray-700 leading-relaxed">{review.review_text}</p>
+                      </div>
+                    </div>
+                    <div className="flex items-center space-x-4 mt-4">
+                      <button
+                        onClick={() => review.id && handleMarkHelpful(review.id)}
+                        className="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600"
+                      >
+                        <ThumbsUp className="w-4 h-4" />
+                        <span>Helpful ({review.helpful_count || 0})</span>
+                      </button>
+                      {review.verified_purchase && (
+                        <span className="text-xs px-2 py-1 bg-green-100 text-green-800 rounded-full">
+                          Verified Purchase
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
         );
       default:
         return null;
