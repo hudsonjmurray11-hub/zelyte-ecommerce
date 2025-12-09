@@ -27,7 +27,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   // Promo code validation
   const validPromoCodes: { [key: string]: number } = {
     'HUDDY': 0.10, // 10% discount
-    'VIP': 0.50 // 50% discount
+    'VIP11': 0.50 // 50% discount
   };
 
   const handleApplyPromoCode = () => {
