@@ -120,3 +120,6 @@ Click the **"Logout"** button in the top right corner of the admin panel.
 
 **Need Help?** Check the browser console for any error messages!
 
+
+
+

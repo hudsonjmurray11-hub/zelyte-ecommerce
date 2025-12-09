@@ -26,3 +26,6 @@ CREATE POLICY "Users can create own orders"
 -- 2. Add admin role checks to policies
 -- 3. Use service role key on backend for admin operations
 
+
+
+
