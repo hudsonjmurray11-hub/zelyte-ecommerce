@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, ShoppingCart, ArrowLeft, Check, Zap, Coffee, Brain, MessageSquare, ThumbsUp, Send } from 'lucide-react';
+import { Star, ShoppingCart, ArrowLeft, Check, Zap, Coffee, Brain, MessageSquare, ThumbsUp, Send, ChevronDown } from 'lucide-react';
 import { Product } from '../types/product';
 import { getRelatedProducts } from '../data/products';
 import { useCart } from '../contexts/CartContext';
@@ -31,6 +31,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
     user_name: '',
   });
   const [submittingReview, setSubmittingReview] = useState(false);
+  const [expandedFAQ, setExpandedFAQ] = useState<string | null>('faq-0'); // First question expanded by default
   const { addToCart, getTotalItems } = useCart();
   const { user } = useAuth();
 
@@ -721,6 +722,64 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
           {/* Tab Content */}
           <div className="bg-white rounded-2xl p-8 shadow-lg">
             {renderTabContent()}
+          </div>
+        </div>
+
+        {/* FAQ Section */}
+        <div className="mb-16">
+          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
+          <div className="max-w-3xl mx-auto space-y-4">
+            {(() => {
+              // Determine if product has caffeine
+              const hasCaffeine = product.category === 'Electrolytes + Caffeine' || product.caffeineMg > 0;
+              
+              // FAQ answers based on product type
+              const faqAnswers = hasCaffeine ? {
+                q1: "Place 1 pouch between your gum and upper lip. Let it sit and enjoy the flavor. When you're done, remove and discard the pouch.",
+                q2: "Most people keep a pouch in for about 10–20 minutes, depending on preference.",
+                q3: "When you want hydration plus a clean boost—before workouts, during long days, or when you need focus and energy on the go.",
+                q4: "Yes. Zelyte contains no nicotine and no tobacco.",
+                q5: "Each pouch contains 40mg caffeine. Start with 1 pouch and assess your tolerance. Avoid taking too close to bedtime. If you're sensitive to caffeine or have any medical condition, check with a healthcare professional.",
+                q6: "No—this is a pouch. It won't dissolve like a candy. Remove and discard it after use."
+              } : {
+                q1: "Place 1 pouch between your gum and upper lip. Let it sit and enjoy the flavor. When you're done, remove and discard the pouch.",
+                q2: "Most people keep a pouch in for about 10–20 minutes, depending on preference.",
+                q3: "Any time you want clean hydration support—before a workout, during training, after sweating, or whenever you're on the go and need electrolytes.",
+                q4: "Yes. Zelyte contains no nicotine and no tobacco.",
+                q5: "Start with 1–2 pouches and adjust based on your needs and activity level. If you have any medical condition or take medication, check with a healthcare professional.",
+                q6: "No—this is a pouch. It won't dissolve like a candy. Remove and discard it after use."
+              };
+
+              const faqQuestions = [
+                { id: 'faq-0', question: 'How do I use Zelyte?', answer: faqAnswers.q1 },
+                { id: 'faq-1', question: 'How long does it last?', answer: faqAnswers.q2 },
+                { id: 'faq-2', question: 'When should I take it?', answer: faqAnswers.q3 },
+                { id: 'faq-3', question: 'Is this nicotine-free?', answer: faqAnswers.q4 },
+                { id: 'faq-4', question: 'How many pouches can I use per day?', answer: faqAnswers.q5 },
+                { id: 'faq-5', question: 'Does it dissolve?', answer: faqAnswers.q6 }
+              ];
+
+              return faqQuestions.map((faq, index) => (
+                <div key={faq.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                  <button
+                    onClick={() => setExpandedFAQ(expandedFAQ === faq.id ? null : faq.id)}
+                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                  >
+                    <span className="font-semibold text-gray-900 pr-4">{faq.question}</span>
+                    <ChevronDown
+                      className={`w-5 h-5 text-gray-500 transition-transform duration-200 flex-shrink-0 ${
+                        expandedFAQ === faq.id ? 'transform rotate-180' : ''
+                      }`}
+                    />
+                  </button>
+                  {expandedFAQ === faq.id && (
+                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                      <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
+                    </div>
+                  )}
+                </div>
+              ));
+            })()}
           </div>
         </div>
 
