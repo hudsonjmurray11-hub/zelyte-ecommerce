@@ -857,7 +857,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
             </div>
           </div>
         )}
-      </div>
 
         {/* Tabbed Content */}
         <div className="mb-16">
