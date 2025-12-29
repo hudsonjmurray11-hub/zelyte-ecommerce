@@ -79,8 +79,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
 
   useEffect(() => {
     document.title = `${product.name} - Zelyte`;
+    setSelectedImage(0); // Reset to first image when product changes
     loadReviews();
   }, [product.id]);
+
+  // Ensure selectedImage is always within bounds
+  useEffect(() => {
+    if (product.images && product.images.length > 0 && selectedImage >= product.images.length) {
+      setSelectedImage(0);
+    }
+  }, [product.images, selectedImage]);
 
   const loadReviews = async () => {
     setLoadingReviews(true);
@@ -473,7 +481,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
               </div>
               
               {/* Previous/Next Arrow Buttons */}
-              {product.images.length > 1 && (
+              {product.images && product.images.length > 1 && (
                 <>
                   <button
                     onClick={() => setSelectedImage((selectedImage - 1 + product.images.length) % product.images.length)}
@@ -492,13 +500,22 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                 </>
               )}
               
-              <img
-                src={product.images[selectedImage]}
-                alt={product.name}
-                className="w-full h-full object-contain p-8"
-              />
+              {product.images && product.images.length > 0 ? (
+                <img
+                  src={product.images[selectedImage] || product.images[0]}
+                  alt={product.name}
+                  className="w-full h-full object-contain p-8"
+                  onError={(e) => {
+                    console.error('Failed to load image:', product.images[selectedImage], 'Selected index:', selectedImage, 'All images:', product.images);
+                  }}
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                  <p>Loading image...</p>
+                </div>
+              )}
             </div>
-            {product.images.length > 1 && (
+            {product.images && product.images.length > 1 && (
               <div className="grid grid-cols-4 gap-2">
                 {product.images.map((image, index) => (
                   <button
