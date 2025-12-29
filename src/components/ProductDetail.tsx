@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Star, ShoppingCart, ArrowLeft, Check, Zap, Coffee, Brain, MessageSquare, ThumbsUp, Send, ChevronDown } from 'lucide-react';
+import { Star, ShoppingCart, ArrowLeft, Check, Zap, Coffee, Brain, MessageSquare, ThumbsUp, Send, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../types/product';
 import { getRelatedProducts } from '../data/products';
 import { useCart } from '../contexts/CartContext';
@@ -466,11 +466,31 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
         <div className="grid lg:grid-cols-2 gap-12 mb-16">
           {/* Image Gallery */}
           <div>
-            <div className="aspect-square bg-white rounded-2xl shadow-lg mb-4 relative">
+            <div className="aspect-square bg-white rounded-2xl shadow-lg mb-4 relative group">
               {/* COMING SOON Badge - Fully visible, no overflow hidden */}
               <div className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-lg font-bold px-8 py-3 transform rotate-12 shadow-2xl z-10">
                 COMING SOON
               </div>
+              
+              {/* Previous/Next Arrow Buttons */}
+              {product.images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setSelectedImage((selectedImage - 1 + product.images.length) % product.images.length)}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                    aria-label="Previous image"
+                  >
+                    <ChevronLeft className="w-6 h-6 text-gray-700" />
+                  </button>
+                  <button
+                    onClick={() => setSelectedImage((selectedImage + 1) % product.images.length)}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-20"
+                    aria-label="Next image"
+                  >
+                    <ChevronRight className="w-6 h-6 text-gray-700" />
+                  </button>
+                </>
+              )}
               
               <img
                 src={product.images[selectedImage]}
@@ -484,8 +504,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                   <button
                     key={index}
                     onClick={() => setSelectedImage(index)}
-                    className={`aspect-square bg-white rounded-lg overflow-hidden border-2 ${
-                      selectedImage === index ? 'border-blue-500' : 'border-gray-200'
+                    className={`aspect-square bg-white rounded-lg overflow-hidden border-2 transition-all ${
+                      selectedImage === index ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
                     <img

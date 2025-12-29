@@ -11,7 +11,7 @@ export const products: Product[] = [
     caffeineMg: 0,
     servings: 15,
     summary: 'Tropical blend with natural coconut and citrus flavors for refreshing hydration.',
-    images: ['/Zelyte_COCONUT.webp'],
+    images: ['/Zelyte_COCONUT.webp', '/zelyte-comparison-chart.png'],
     badges: ['No Artificial Flavors', 'Sugar-Free', 'Natural'],
     description: 'Experience the perfect tropical escape with our Coconut Citrus electrolyte blend. This refreshing combination of natural coconut and citrus flavors delivers premium hydration with a taste that transports you to paradise. Each serving provides essential electrolytes without any artificial ingredients, making it perfect for any time of day.',
     benefits: [
@@ -54,7 +54,7 @@ export const products: Product[] = [
     caffeineMg: 0,
     servings: 15,
     summary: 'Cool peppermint for clean, crisp hydration that refreshes and revitalizes.',
-    images: ['/ZelytePeppermintImage .png'],
+    images: ['/ZelytePeppermintImage .png', '/zelyte-comparison-chart.png'],
     badges: ['No Artificial Flavors', 'Sugar-Free', 'Natural'],
     description: 'Refresh and revitalize with our crisp Peppermint electrolyte blend. This cooling flavor provides a clean, invigorating taste that\'s perfect for any time of day. The natural peppermint flavor delivers a refreshing experience while providing essential electrolytes for optimal hydration.',
     benefits: [
@@ -96,7 +96,7 @@ export const products: Product[] = [
     caffeineMg: 40,
     servings: 15,
     summary: 'Classic citrus with a focused kick - energizing hydration for peak performance.',
-    images: ['/Zelyte_Lemon_Lime.png'],
+    images: ['/Zelyte_Lemon_Lime.png', '/zelyte-comparison-chart.png'],
     badges: ['No Artificial Flavors', 'Sugar-Free', 'Natural Caffeine'],
     description: 'Power up your day with our Lemon Lime electrolyte blend enhanced with natural caffeine. This classic citrus combination delivers both hydration and energy, perfect for workouts, study sessions, or any time you need a focused boost. The natural caffeine provides sustained energy without the crash.',
     benefits: [
@@ -141,7 +141,7 @@ export const products: Product[] = [
     caffeineMg: 40,
     servings: 15,
     summary: 'Refreshing wintergreen with smooth energy for a crisp, energizing experience.',
-    images: ['/Zelyte_WINTERGREEN.png'],
+    images: ['/Zelyte_WINTERGREEN.png', '/zelyte-comparison-chart.png'],
     badges: ['No Artificial Flavors', 'Sugar-Free', 'Natural Caffeine'],
     description: 'Experience the crisp, refreshing taste of wintergreen enhanced with natural caffeine. This unique flavor combination delivers both hydration and energy in a smooth, refreshing way. Perfect for those who want a clean, energizing boost without overwhelming sweetness.',
     benefits: [
