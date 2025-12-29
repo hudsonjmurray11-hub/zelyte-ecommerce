@@ -105,7 +105,7 @@ const Testimonials = () => {
   };
 
   return (
-    <section id="testimonials" className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50">
+    <section id="testimonials" className="py-12 md:py-16 bg-gradient-to-br from-blue-50 to-cyan-50">
       <div className="max-w-7xl mx-auto px-6">
         <div 
           ref={headerRef as React.RefObject<HTMLDivElement>}

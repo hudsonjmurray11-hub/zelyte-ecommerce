@@ -61,7 +61,7 @@ const Science = () => {
   }, []);
 
   return (
-    <section id="science" className="py-20 bg-white">
+    <section id="science" className="py-12 md:py-16 bg-white">
       <div className="max-w-7xl mx-auto px-6">
         <div 
           ref={headerRef as React.RefObject<HTMLDivElement>}
