@@ -17,76 +17,145 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Water Background Gradient */}
+      {/* Deep Water Background Gradient - More Realistic */}
       <div 
-        className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600"
+        className="absolute inset-0"
         style={{
+          background: 'linear-gradient(to bottom, #0ea5e9 0%, #0284c7 25%, #0369a1 50%, #075985 75%, #0c4a6e 100%)',
           transform: `translateY(${scrollY * 0.5}px)`,
         }}
       />
       
-      {/* Animated Water Waves */}
-      <div className="absolute inset-0 opacity-30 overflow-hidden">
-        <svg className="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 1200 200" preserveAspectRatio="none" style={{ transform: 'translateY(20px)' }}>
+      {/* Water Depth Layers */}
+      <div className="absolute inset-0 opacity-40">
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'radial-gradient(ellipse at center, rgba(14,165,233,0.3) 0%, transparent 70%)',
+          }}
+        />
+        <div 
+          className="absolute bottom-0 left-0 right-0 h-1/3"
+          style={{
+            background: 'linear-gradient(to top, rgba(6,182,212,0.4) 0%, transparent 100%)',
+          }}
+        />
+      </div>
+      
+      {/* Realistic Water Waves - Multiple Layers */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Base Wave Layer - Large Swells */}
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: '60%', opacity: 0.4 }}>
           <path
-            d="M0,100 Q300,50 600,100 T1200,100 L1200,200 L0,200 Z"
-            fill="rgba(255,255,255,0.1)"
-            style={{
-              animation: 'wave 8s ease-in-out infinite',
-            }}
-          />
-          <path
-            d="M0,120 Q300,80 600,120 T1200,120 L1200,200 L0,200 Z"
+            d="M0,160 L0,320 L1440,320 L1440,160 Q1200,120 960,160 T480,160 T0,160 Z"
             fill="rgba(255,255,255,0.15)"
             style={{
-              animation: 'wave 10s ease-in-out infinite 0.5s',
-            }}
-          />
-          <path
-            d="M0,140 Q300,100 600,140 T1200,140 L1200,200 L0,200 Z"
-            fill="rgba(255,255,255,0.1)"
-            style={{
-              animation: 'wave 12s ease-in-out infinite 1s',
+              animation: 'waveRealistic 12s ease-in-out infinite',
             }}
           />
         </svg>
-        {/* Additional wave layer for depth */}
-        <svg className="absolute bottom-0 left-0 w-full h-full" viewBox="0 0 1200 200" preserveAspectRatio="none" style={{ transform: 'translateY(40px) scaleX(-1)' }}>
+        
+        {/* Mid Wave Layer - Medium Swells */}
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: '50%', opacity: 0.5 }}>
           <path
-            d="M0,110 Q300,60 600,110 T1200,110 L1200,200 L0,200 Z"
-            fill="rgba(255,255,255,0.08)"
+            d="M0,180 L0,320 L1440,320 L1440,180 Q1080,140 720,180 T360,180 T0,180 Z"
+            fill="rgba(255,255,255,0.2)"
             style={{
-              animation: 'wave 9s ease-in-out infinite 0.3s',
+              animation: 'waveRealistic 10s ease-in-out infinite 0.5s',
+            }}
+          />
+        </svg>
+        
+        {/* Surface Wave Layer - Small Ripples */}
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: '40%', opacity: 0.6 }}>
+          <path
+            d="M0,200 L0,320 L1440,320 L1440,200 Q1000,160 600,200 T300,200 T0,200 Z"
+            fill="rgba(255,255,255,0.25)"
+            style={{
+              animation: 'waveRealistic 8s ease-in-out infinite 1s',
+            }}
+          />
+        </svg>
+        
+        {/* Foam/Whitecaps on Waves */}
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: '35%', opacity: 0.7 }}>
+          <path
+            d="M0,220 L0,320 L1440,320 L1440,220 Q900,180 540,220 T270,220 T0,220 Z"
+            fill="rgba(255,255,255,0.4)"
+            style={{
+              animation: 'waveRealistic 7s ease-in-out infinite 1.5s',
+            }}
+          />
+        </svg>
+        
+        {/* Additional Wave Layer - Cross Current */}
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: '45%', opacity: 0.3, transform: 'scaleX(-1)' }}>
+          <path
+            d="M0,190 L0,320 L1440,320 L1440,190 Q1100,150 750,190 T400,190 T0,190 Z"
+            fill="rgba(255,255,255,0.15)"
+            style={{
+              animation: 'waveRealistic 11s ease-in-out infinite 0.3s',
+            }}
+          />
+        </svg>
+        
+        {/* Extra Intense Wave Layer */}
+        <svg className="absolute bottom-0 left-0 w-full" viewBox="0 0 1440 320" preserveAspectRatio="none" style={{ height: '55%', opacity: 0.35 }}>
+          <path
+            d="M0,170 L0,320 L1440,320 L1440,170 Q1050,130 690,170 T330,170 T0,170 Z"
+            fill="rgba(255,255,255,0.18)"
+            style={{
+              animation: 'waveRealistic 9s ease-in-out infinite 0.7s',
             }}
           />
         </svg>
       </div>
 
-      {/* Water Ripples/Bubbles */}
-      <div className="absolute inset-0 opacity-20">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-xl animate-pulse" />
-        <div className="absolute bottom-40 right-32 w-24 h-24 bg-white rounded-full blur-xl animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full blur-xl animate-pulse" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute top-1/3 right-1/4 w-20 h-20 bg-cyan-200 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '1.5s' }} />
-        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-blue-200 rounded-full blur-2xl animate-pulse" style={{ animationDelay: '2s' }} />
-      </div>
-
-      {/* Floating Water Particles */}
-      <div className="absolute inset-0 overflow-hidden">
-        {[...Array(20)].map((_, i) => (
+      {/* Water Ripples and Bubbles - More Intense */}
+      <div className="absolute inset-0 opacity-30">
+        {[...Array(15)].map((_, i) => (
           <div
-            key={i}
-            className="absolute rounded-full bg-white/20 blur-sm"
+            key={`bubble-${i}`}
+            className="absolute rounded-full bg-white/30 blur-xl"
             style={{
-              width: `${Math.random() * 8 + 4}px`,
-              height: `${Math.random() * 8 + 4}px`,
+              width: `${Math.random() * 60 + 20}px`,
+              height: `${Math.random() * 60 + 20}px`,
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-              animation: `float ${Math.random() * 10 + 10}s ease-in-out infinite`,
+              animation: `bubbleRise ${Math.random() * 8 + 6}s ease-in-out infinite`,
+              animationDelay: `${Math.random() * 3}s`,
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Intense Water Particles and Droplets */}
+      <div className="absolute inset-0 overflow-hidden">
+        {[...Array(40)].map((_, i) => (
+          <div
+            key={`particle-${i}`}
+            className="absolute rounded-full bg-white/25 blur-sm"
+            style={{
+              width: `${Math.random() * 12 + 3}px`,
+              height: `${Math.random() * 12 + 3}px`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animation: `waterFloat ${Math.random() * 15 + 10}s ease-in-out infinite`,
               animationDelay: `${Math.random() * 5}s`,
             }}
           />
         ))}
+      </div>
+
+      {/* Water Surface Reflections */}
+      <div className="absolute inset-0 opacity-20">
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: 'linear-gradient(180deg, transparent 0%, rgba(255,255,255,0.1) 50%, transparent 100%)',
+            animation: 'waterShimmer 4s ease-in-out infinite',
+          }}
+        />
       </div>
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
