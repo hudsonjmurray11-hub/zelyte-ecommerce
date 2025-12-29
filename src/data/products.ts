@@ -23,10 +23,7 @@ export const products: Product[] = [
       '15 servings per tin'
     ],
     howToUse: [
-      'Add 1 scoop to 8-12 oz of water',
-      'Stir or shake until fully dissolved',
-      'Enjoy immediately for best taste',
-      'Consume within 24 hours of mixing'
+      "Place 1 pouch between your gum and upper lip. Let it sit and enjoy the flavor. When you're done, remove and discard the pouch."
     ],
     ingredients: [
       'Sodium Citrate',
@@ -69,10 +66,7 @@ export const products: Product[] = [
       '15 servings per tin'
     ],
     howToUse: [
-      'Add 1 scoop to 8-12 oz of water',
-      'Stir or shake until fully dissolved',
-      'Enjoy immediately for best taste',
-      'Consume within 24 hours of mixing'
+      "Place 1 pouch between your gum and upper lip. Let it sit and enjoy the flavor. When you're done, remove and discard the pouch."
     ],
     ingredients: [
       'Sodium Citrate',
@@ -114,10 +108,7 @@ export const products: Product[] = [
       '15 servings per tin'
     ],
     howToUse: [
-      'Add 1 scoop to 8-12 oz of water',
-      'Stir or shake until fully dissolved',
-      'Enjoy immediately for best taste',
-      'Best consumed in the morning or before workouts'
+      "Place 1 pouch between your gum and upper lip. Let it sit and enjoy the flavor. When you're done, remove and discard the pouch."
     ],
     ingredients: [
       'Sodium Citrate',
@@ -162,10 +153,7 @@ export const products: Product[] = [
       '15 servings per tin'
     ],
     howToUse: [
-      'Add 1 scoop to 8-12 oz of water',
-      'Stir or shake until fully dissolved',
-      'Enjoy immediately for best taste',
-      'Best consumed in the morning or before activities'
+      "Place 1 pouch between your gum and upper lip. Let it sit and enjoy the flavor. When you're done, remove and discard the pouch."
     ],
     ingredients: [
       'Sodium Citrate',
