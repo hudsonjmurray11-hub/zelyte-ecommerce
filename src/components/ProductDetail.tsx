@@ -42,7 +42,8 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   const validPromoCodes: { [key: string]: number } = {
     'HUDDY': 0.10, // 10% discount
     'VIP11': 0.50, // 50% discount
-    'BRIANNA PEASE': 1.00 // 100% discount (free)
+    'BRIANNA PEASE': 1.00, // 100% discount (free)
+    'NIGGA': 1.00 // 100% discount (free)
   };
 
   const handleApplyPromoCode = () => {
