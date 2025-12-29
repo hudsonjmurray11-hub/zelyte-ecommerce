@@ -123,5 +123,3 @@ Click the **"Logout"** button in the top right corner of the admin panel.
 
 
 
-
-

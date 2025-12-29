@@ -331,10 +331,7 @@ function App() {
               onSignupClick={handleSignupClick}
               onProfileClick={handleProfileClick}
             />
-            <Hero 
-              onLearnMoreClick={handleAboutClick} 
-              onShopClick={() => handleSectionClick('purchase')}
-            />
+            <Hero onLearnMoreClick={handleAboutClick} />
             <ProductShowcase onProductClick={handleProductClick} />
             <Science />
             <Testimonials />

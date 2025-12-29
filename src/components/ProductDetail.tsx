@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Star, ShoppingCart, ArrowLeft, Check, Zap, Coffee, Brain, MessageSquare, ThumbsUp, Send, ChevronDown } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Star, ShoppingCart, ArrowLeft, Check, Zap, Coffee, Brain, MessageSquare, ThumbsUp, Send } from 'lucide-react';
 import { Product } from '../types/product';
 import { getRelatedProducts } from '../data/products';
 import { useCart } from '../contexts/CartContext';
@@ -31,9 +31,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
     user_name: '',
   });
   const [submittingReview, setSubmittingReview] = useState(false);
-  const [showStickyBar, setShowStickyBar] = useState(false);
-  const [expandedFAQ, setExpandedFAQ] = useState<string | null>(null);
-  const buyBoxRef = useRef<HTMLDivElement>(null);
   const { addToCart, getTotalItems } = useCart();
   const { user } = useAuth();
 
@@ -83,25 +80,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
     document.title = `${product.name} - Zelyte`;
     loadReviews();
   }, [product.id]);
-
-  // Mobile sticky bar visibility
-  useEffect(() => {
-    const handleScroll = () => {
-      if (buyBoxRef.current) {
-        const rect = buyBoxRef.current.getBoundingClientRect();
-        setShowStickyBar(rect.bottom < 0 && window.innerWidth < 1024);
-      }
-    };
-
-    window.addEventListener('scroll', handleScroll);
-    window.addEventListener('resize', handleScroll);
-    handleScroll(); // Initial check
-
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      window.removeEventListener('resize', handleScroll);
-    };
-  }, []);
 
   const loadReviews = async () => {
     setLoadingReviews(true);
@@ -185,95 +163,53 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
         return <p className="text-gray-600 leading-relaxed">{product.description}</p>;
       case 'benefits':
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Key Benefits</h3>
-            <ul className="space-y-3">
-              {product.benefits.slice(0, 5).map((benefit, index) => (
-                <li key={index} className="flex items-start space-x-3">
-                  <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
-                  <span className="text-gray-700 font-medium">{benefit}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
+          <ul className="space-y-3">
+            {product.benefits.map((benefit, index) => (
+              <li key={index} className="flex items-start space-x-3">
+                <Check className="w-5 h-5 text-green-500 flex-shrink-0 mt-0.5" />
+                <span className="text-gray-600">{benefit}</span>
+              </li>
+            ))}
+          </ul>
         );
       case 'how-to-use':
         return (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">How to Use</h3>
-            <ol className="space-y-4">
-              {product.howToUse.slice(0, 3).map((step, index) => (
-                <li key={index} className="flex items-start space-x-4">
-                  <span className="flex-shrink-0 w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-bold">
-                    {index + 1}
-                  </span>
-                  <div className="flex-1">
-                    <span className="text-gray-700 font-medium block">{step}</span>
-                    {index === 0 && (
-                      <p className="text-sm text-gray-500 mt-1">Best consumed within 24 hours of mixing</p>
-                    )}
-                  </div>
-                </li>
-              ))}
-            </ol>
-            <div className="mt-6 p-4 bg-blue-50 rounded-lg">
-              <p className="text-sm text-blue-800">
-                <strong>Timing:</strong> Take 1 pouch anytime you need hydration—before, during, or after activity.
-              </p>
-            </div>
-          </div>
+          <ol className="space-y-3">
+            {product.howToUse.map((step, index) => (
+              <li key={index} className="flex items-start space-x-3">
+                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
+                  {index + 1}
+                </span>
+                <span className="text-gray-600">{step}</span>
+              </li>
+            ))}
+          </ol>
         );
       case 'ingredients':
         return (
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4">Ingredients</h3>
-              <ul className="space-y-2">
-                {product.ingredients.map((ingredient, index) => (
-                  <li key={index} className="text-gray-700 flex items-start">
-                    <span className="mr-2">•</span>
-                    <span>{ingredient}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-            {product.nutritionFacts && (
-              <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-4">Nutrition Facts (per pouch)</h3>
-                <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-                  <div className="space-y-2">
-                    {Object.entries(product.nutritionFacts).map(([key, value]) => (
-                      <div key={key} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0">
-                        <span className="font-medium text-gray-900">{key}</span>
-                        <span className="text-gray-700">{value}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                <a href="#" className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-4 inline-block">
-                  View full nutrition facts →
-                </a>
-              </div>
-            )}
-          </div>
+          <ul className="space-y-2">
+            {product.ingredients.map((ingredient, index) => (
+              <li key={index} className="text-gray-600">• {ingredient}</li>
+            ))}
+          </ul>
         );
       case 'nutrition':
         return product.nutritionFacts ? (
-          <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Nutrition Facts (per pouch)</h3>
-            <div className="bg-gray-50 rounded-lg p-6 border border-gray-200">
-              <div className="space-y-2">
+          <div className="overflow-x-auto">
+            <table className="w-full border-collapse border border-gray-300">
+              <tbody>
                 {Object.entries(product.nutritionFacts).map(([key, value]) => (
-                  <div key={key} className="flex justify-between items-center py-2 border-b border-gray-200 last:border-0">
-                    <span className="font-medium text-gray-900">{key}</span>
-                    <span className="text-gray-700">{value}</span>
-                  </div>
+                  <tr key={key}>
+                    <td className="border border-gray-300 px-4 py-2 font-medium text-gray-900">
+                      {key}
+                    </td>
+                    <td className="border border-gray-300 px-4 py-2 text-gray-600">
+                      {value}
+                    </td>
+                  </tr>
                 ))}
-              </div>
-            </div>
-            <a href="#" className="text-blue-600 hover:text-blue-800 text-sm font-medium mt-4 inline-block">
-              View full nutrition facts →
-            </a>
+              </tbody>
+            </table>
           </div>
         ) : (
           <p className="text-gray-600">Nutrition facts not available.</p>
@@ -582,22 +518,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                   </span>
                 )}
               </div>
-              <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              <h1 className="text-4xl font-bold text-gray-900 mb-4">
                 {product.name}
                 <span className="ml-4 inline-block bg-gradient-to-r from-orange-500 to-red-500 text-white text-sm font-bold px-4 py-1 rounded-full shadow-lg">
                   COMING SOON
                 </span>
               </h1>
-              
-              {/* Price + Value Display */}
-              <div className="flex items-center flex-wrap gap-3 mb-4">
-                <span className="text-2xl font-bold text-gray-900">${product.price}</span>
-                <span className="text-gray-500">•</span>
-                <span className="text-gray-700">{product.servings} pouches</span>
-                <span className="text-gray-500">•</span>
-                <span className="text-gray-700">${pricePerServing.toFixed(2)}/pouch</span>
-              </div>
-              
               <div className="flex items-center space-x-4 mb-4">
                 <div className="flex items-center">
                   {[...Array(5)].map((_, i) => (
@@ -615,7 +541,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                   </span>
                 </div>
               </div>
-              <p className="text-lg text-gray-600 mb-6">{product.summary}</p>
+              <p className="text-lg text-gray-600">{product.summary}</p>
             </div>
 
             {/* Badges */}
@@ -633,7 +559,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
             )}
 
             {/* Purchase Panel */}
-            <div ref={buyBoxRef} className="bg-white rounded-2xl p-6 shadow-lg">
+            <div className="bg-white rounded-2xl p-6 shadow-lg">
               <div className="space-y-6">
                 {/* Quantity Selector */}
                 <div>
@@ -765,98 +691,11 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                     <ShoppingCart className="w-5 h-5" />
                     <span>Not Available Yet</span>
                   </button>
-                  
-                  {/* Shipping/Returns Microcopy */}
-                  <div className="pt-4 border-t space-y-2">
-                    <p className="text-sm text-gray-600 text-center">
-                      Ships in 1–3 business days • Free shipping $50+ • Easy returns
-                    </p>
-                  </div>
-                  
-                  {/* Trust Badges */}
-                  <div className="grid grid-cols-2 gap-3 pt-4 border-t">
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Secure checkout</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Fast shipping</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Support</span>
-                    </div>
-                    <div className="flex items-center space-x-2 text-sm text-gray-600">
-                      <Check className="w-4 h-4 text-green-600 flex-shrink-0" />
-                      <span>Satisfaction guarantee</span>
-                    </div>
-                  </div>
                 </div>
-              </div>
-            </div>
-            
-            {/* Bundle Upsells */}
-            <div className="bg-gray-50 rounded-2xl p-6 mt-6">
-              <h3 className="text-lg font-bold text-gray-900 mb-4">Save with bundles</h3>
-              <div className="grid grid-cols-2 gap-4">
-                <button
-                  onClick={() => {
-                    // Add 3-pack logic
-                    const bundlePrice = product.price * 3 * 0.9; // 10% off
-                    addToCart({
-                      id: `${product.id}-3pack`,
-                      name: `${product.name} - 3 Pack`,
-                      price: bundlePrice / 3,
-                      flavor: product.name
-                    });
-                  }}
-                  className="bg-white border-2 border-blue-500 rounded-lg p-4 text-left hover:shadow-md transition-all"
-                >
-                  <div className="font-semibold text-gray-900 mb-1">3-Pack</div>
-                  <div className="text-sm text-gray-600 mb-2">${(product.price * 3 * 0.9).toFixed(2)}</div>
-                  <div className="text-xs text-green-600 font-medium">Save 10%</div>
-                </button>
-                <button
-                  onClick={() => {
-                    // Add 6-pack logic
-                    const bundlePrice = product.price * 6 * 0.85; // 15% off
-                    addToCart({
-                      id: `${product.id}-6pack`,
-                      name: `${product.name} - 6 Pack`,
-                      price: bundlePrice / 6,
-                      flavor: product.name
-                    });
-                  }}
-                  className="bg-white border-2 border-blue-500 rounded-lg p-4 text-left hover:shadow-md transition-all"
-                >
-                  <div className="font-semibold text-gray-900 mb-1">6-Pack</div>
-                  <div className="text-sm text-gray-600 mb-2">${(product.price * 6 * 0.85).toFixed(2)}</div>
-                  <div className="text-xs text-green-600 font-medium">Save 15%</div>
-                </button>
               </div>
             </div>
           </div>
         </div>
-        
-        {/* Mobile Sticky Add-to-Cart Bar */}
-        {showStickyBar && (
-          <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 shadow-lg z-50" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
-            <div className="px-4 py-3 flex items-center justify-between max-w-7xl mx-auto">
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-gray-900 text-sm truncate">{product.name}</div>
-                <div className="text-lg font-bold text-blue-600">${finalPrice.toFixed(2)}</div>
-              </div>
-              <button
-                disabled
-                className="ml-4 bg-gray-400 cursor-not-allowed text-white px-6 py-3 rounded-lg font-semibold text-sm opacity-60 flex items-center space-x-2 flex-shrink-0"
-              >
-                <ShoppingCart className="w-4 h-4" />
-                <span>Add to cart</span>
-              </button>
-            </div>
-          </div>
-        )}
 
         {/* Tabbed Content */}
         <div className="mb-16">
@@ -885,58 +724,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
           </div>
         </div>
 
-        {/* FAQ Section */}
-        <div className="mb-16">
-          <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center">Frequently Asked Questions</h2>
-          <div className="max-w-3xl mx-auto space-y-4">
-            {[
-              {
-                question: 'How do I use it?',
-                answer: 'Simply add 1 pouch to 8-12 oz of water, stir or shake until fully dissolved, and enjoy immediately. Best consumed within 24 hours of mixing.'
-              },
-              {
-                question: 'How long does it last?',
-                answer: 'Each tin contains 15 pouches. Once mixed, consume within 24 hours for best taste and effectiveness.'
-              },
-              {
-                question: 'When should I take it?',
-                answer: 'Take 1 pouch anytime you need hydration—before, during, or after activity. Perfect for workouts, daily hydration, or whenever you need an electrolyte boost.'
-              },
-              {
-                question: 'Is it nicotine-free?',
-                answer: 'Yes, all Zelyte products are completely nicotine-free. They contain only electrolytes and natural flavors (with optional caffeine in some varieties).'
-              },
-              {
-                question: 'How many per day?',
-                answer: 'You can safely consume 1-3 pouches per day, depending on your activity level and hydration needs. Listen to your body and adjust accordingly.'
-              },
-              {
-                question: 'Does it dissolve?',
-                answer: 'Yes, the powder dissolves quickly in water. Simply stir or shake for a few seconds until fully dissolved. If you notice any clumping, continue stirring or shake more vigorously.'
-              }
-            ].map((faq, index) => (
-              <div key={index} className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-                <button
-                  onClick={() => setExpandedFAQ(expandedFAQ === `faq-${index}` ? null : `faq-${index}`)}
-                  className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-                >
-                  <span className="font-semibold text-gray-900">{faq.question}</span>
-                  <ChevronDown
-                    className={`w-5 h-5 text-gray-500 transition-transform flex-shrink-0 ${
-                      expandedFAQ === `faq-${index}` ? 'transform rotate-180' : ''
-                    }`}
-                  />
-                </button>
-                {expandedFAQ === `faq-${index}` && (
-                  <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                    <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
-                  </div>
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
-
         {/* Cross-sell */}
         {relatedProducts.length > 0 && (
           <div>
@@ -947,74 +734,47 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
               {relatedProducts.map((relatedProduct) => (
                 <div
                   key={relatedProduct.id}
-                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all flex flex-col relative"
+                  className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer relative"
+                  onClick={() => onProductClick && onProductClick(relatedProduct.slug)}
                 >
                   {/* COMING SOON Badge - Fully visible */}
                   <div className="absolute -top-2 -right-2 bg-gradient-to-r from-orange-500 to-red-500 text-white text-xs font-bold px-4 py-2 transform rotate-12 shadow-lg z-10">
                     COMING SOON
                   </div>
                   
-                  <div 
-                    className="aspect-square bg-gray-50 rounded-lg mb-4 overflow-hidden cursor-pointer"
-                    onClick={() => onProductClick && onProductClick(relatedProduct.slug)}
-                  >
+                  <div className="aspect-square bg-gray-50 rounded-lg mb-4 overflow-hidden">
                     <img
                       src={relatedProduct.images[0]}
                       alt={relatedProduct.name}
                       className="w-full h-full object-contain p-4"
                     />
                   </div>
-                  
-                  {/* Category Label */}
-                  <div className="mb-2">
-                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                      relatedProduct.category === 'Electrolytes'
-                        ? 'bg-blue-100 text-blue-800'
+                  <div className="flex items-center justify-between mb-2">
+                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      relatedProduct.category === 'Electrolytes' 
+                        ? 'bg-blue-100 text-blue-800' 
                         : 'bg-yellow-100 text-yellow-800'
                     }`}>
-                      {relatedProduct.category === 'Electrolytes' ? 'Hydration' : 'Hydration + Caffeine'}
+                      {relatedProduct.category}
                     </span>
+                    {relatedProduct.caffeineMg > 0 && (
+                      <div className="flex items-center text-green-600">
+                        <Coffee className="w-4 h-4 mr-1" />
+                        <span className="text-xs font-medium">
+                          {relatedProduct.caffeineMg}mg
+                        </span>
+                      </div>
+                    )}
                   </div>
-                  
-                  <h3 
-                    className="font-bold text-gray-900 mb-2 cursor-pointer hover:text-blue-600"
-                    onClick={() => onProductClick && onProductClick(relatedProduct.slug)}
-                  >
-                    {relatedProduct.name}
-                  </h3>
+                  <h3 className="font-bold text-gray-900 mb-2">{relatedProduct.name}</h3>
                   <div className="flex items-center mb-2">
                     <Star className="w-4 h-4 text-yellow-400 fill-current" />
                     <span className="ml-1 text-sm text-gray-600">
-                      {relatedProduct.rating?.toFixed(1) || '4.5'} ({relatedProduct.reviewsCount || 0})
+                      {relatedProduct.rating} ({relatedProduct.reviewsCount})
                     </span>
                   </div>
-                  <p className="text-sm text-gray-600 mb-3 flex-grow">{relatedProduct.summary}</p>
-                  <p className="font-bold text-blue-600 text-lg mb-4">${relatedProduct.price}</p>
-                  
-                  {/* Quick Add Button */}
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      addToCart({
-                        id: relatedProduct.id,
-                        name: relatedProduct.name,
-                        price: relatedProduct.price,
-                        flavor: relatedProduct.name
-                      });
-                    }}
-                    className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center justify-center space-x-2"
-                  >
-                    <ShoppingCart className="w-4 h-4" />
-                    <span>Quick Add</span>
-                  </button>
-                  
-                  {/* View Details Link */}
-                  <button
-                    onClick={() => onProductClick && onProductClick(relatedProduct.slug)}
-                    className="mt-2 text-center text-sm text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    View details →
-                  </button>
+                  <p className="text-sm text-gray-600 mb-3">{relatedProduct.summary}</p>
+                  <p className="font-bold text-blue-600">${relatedProduct.price}</p>
                 </div>
               ))}
             </div>

@@ -64,6 +64,7 @@ interface ProductShowcaseProps {
 }
 
 const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => {
+  const [selectedProduct, setSelectedProduct] = useState(electrolytes[0]);
   const [productStats, setProductStats] = useState<{ [key: string]: { rating: number; reviews: number } }>({});
   const { addToCart } = useCart();
   const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
@@ -128,7 +129,7 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
   };
 
   return (
-    <section id="products" className="py-12 md:py-16 bg-gray-50">
+    <section id="products" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">
         <div 
           ref={headerRef as React.RefObject<HTMLDivElement>}
@@ -169,27 +170,19 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
                   }`}
                   style={{ transitionDelay: `${index * 150}ms` }}
                 >
-                  <div className="rounded-2xl p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex-grow flex flex-col">
-                    {/* Product Image */}
-                    <div className="aspect-square bg-gray-50 rounded-lg mb-4 overflow-hidden">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-contain p-4"
-                      />
-                    </div>
-                    
-                    {/* Category Label */}
-                    <div className="mb-2">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        product.category === 'Electrolytes'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {product.category === 'Electrolytes' ? 'Hydration' : 'Hydration + Caffeine'}
+                  <div
+                    onClick={() => setSelectedProduct(product)}
+                    className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 flex-grow ${
+                      selectedProduct.id === product.id 
+                        ? 'bg-white shadow-xl border-2 border-blue-500' 
+                        : 'bg-white/70 hover:bg-white shadow-lg'
+                    }`}
+                  >
+                    <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${product.color} mb-4 flex items-center justify-center`}>
+                      <span className="text-white font-bold text-lg">
+                        {product.name.charAt(0)}
                       </span>
                     </div>
-                    
                     <h4 className="font-bold text-gray-900 mb-2">{product.name}</h4>
                     <div className="flex items-center mb-2">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -197,27 +190,15 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
                         {getProductRating(product.id, product.rating).toFixed(1)} ({getProductReviews(product.id, product.reviews)})
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-3 flex-grow">{product.blurb}</p>
-                    <p className="font-bold text-blue-600 text-lg mb-4">${product.price}</p>
-                    
-                    {/* Quick Add Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddToCart(product);
-                      }}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center justify-center space-x-2"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Quick Add</span>
-                    </button>
-                    
-                    {/* View Details Link */}
+                    <p className="text-sm text-gray-600 mb-3">{product.blurb}</p>
+                    <p className="font-bold text-blue-600">${product.price}</p>
+                  </div>
+                  <div className="mt-3">
                     <button
                       onClick={() => onProductClick && onProductClick(product.id)}
-                      className="mt-2 text-center text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      className="inline-flex items-center rounded-xl px-4 py-2 text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
-                      View details →
+                      See more
                     </button>
                   </div>
                 </div>
@@ -247,27 +228,19 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
                   }`}
                   style={{ transitionDelay: `${index * 150}ms` }}
                 >
-                  <div className="rounded-2xl p-6 bg-white shadow-lg hover:shadow-xl transition-all duration-300 flex-grow flex flex-col">
-                    {/* Product Image */}
-                    <div className="aspect-square bg-gray-50 rounded-lg mb-4 overflow-hidden">
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-full h-full object-contain p-4"
-                      />
-                    </div>
-                    
-                    {/* Category Label */}
-                    <div className="mb-2">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
-                        product.category === 'Electrolytes'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {product.category === 'Electrolytes' ? 'Hydration' : 'Hydration + Caffeine'}
+                  <div
+                    onClick={() => setSelectedProduct(product)}
+                    className={`cursor-pointer rounded-2xl p-6 transition-all duration-300 transform hover:scale-105 flex-grow ${
+                      selectedProduct.id === product.id 
+                        ? 'bg-white shadow-xl border-2 border-blue-500' 
+                        : 'bg-white/70 hover:bg-white shadow-lg'
+                    }`}
+                  >
+                    <div className={`w-16 h-16 rounded-full bg-gradient-to-r ${product.color} mb-4 flex items-center justify-center`}>
+                      <span className="text-white font-bold text-lg">
+                        {product.name.charAt(0)}
                       </span>
                     </div>
-                    
                     <h4 className="font-bold text-gray-900 mb-2">{product.name}</h4>
                     <div className="flex items-center mb-2">
                       <Star className="w-4 h-4 text-yellow-400 fill-current" />
@@ -275,27 +248,15 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
                         {getProductRating(product.id, product.rating).toFixed(1)} ({getProductReviews(product.id, product.reviews)})
                       </span>
                     </div>
-                    <p className="text-sm text-gray-600 mb-3 flex-grow">{product.blurb}</p>
-                    <p className="font-bold text-blue-600 text-lg mb-4">${product.price}</p>
-                    
-                    {/* Quick Add Button */}
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleAddToCart(product);
-                      }}
-                      className="w-full bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg font-semibold text-sm transition-all duration-200 flex items-center justify-center space-x-2"
-                    >
-                      <ShoppingCart className="w-4 h-4" />
-                      <span>Quick Add</span>
-                    </button>
-                    
-                    {/* View Details Link */}
+                    <p className="text-sm text-gray-600 mb-3">{product.blurb}</p>
+                    <p className="font-bold text-blue-600">${product.price}</p>
+                  </div>
+                  <div className="mt-3">
                     <button
                       onClick={() => onProductClick && onProductClick(product.id)}
-                      className="mt-2 text-center text-sm text-blue-600 hover:text-blue-800 font-medium"
+                      className="inline-flex items-center rounded-xl px-4 py-2 text-sm font-medium border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 hover:shadow-md transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
                     >
-                      View details →
+                      See more
                     </button>
                   </div>
                 </div>

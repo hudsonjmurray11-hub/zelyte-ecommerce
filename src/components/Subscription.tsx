@@ -9,7 +9,7 @@ const products = [
     name: 'Single Tin',
     price: 10.00,
     description: 'Perfect for trying out',
-    features: ['1 Tin (15 servings)', 'Choose any flavor', 'Free shipping $50+'],
+    features: ['1 Tin (15 servings)', 'Choose any flavor', 'Free shipping over $50'],
     popular: false
   },
   {
@@ -19,7 +19,7 @@ const products = [
     originalPrice: 30,
     savings: 5,
     description: 'Great value for regular users',
-    features: ['3 Tins (45 servings)', 'Mix & match flavors', 'Free shipping $50+', 'Save $5'],
+    features: ['3 Tins (45 servings)', 'Mix & match flavors', 'Free shipping', 'Save $5'],
     popular: true
   },
   {
@@ -29,7 +29,7 @@ const products = [
     originalPrice: 60,
     savings: 10,
     description: 'Best value for enthusiasts',
-    features: ['6 Tins (90 servings)', 'Mix & match flavors', 'Free shipping $50+', 'Save $10']
+    features: ['6 Tins (90 servings)', 'Mix & match flavors', 'Free shipping', 'Save $10']
   }
 ];
 
@@ -79,7 +79,7 @@ const Purchase = () => {
   };
 
   return (
-    <section id="purchase" className="py-12 md:py-16 bg-gray-900 text-white">
+    <section id="purchase" className="py-20 bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-6">
         <div 
           ref={headerRef as React.RefObject<HTMLDivElement>}

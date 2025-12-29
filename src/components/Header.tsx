@@ -199,7 +199,7 @@ const Header: React.FC<HeaderProps> = ({
                 </button>
                 <button
                   onClick={onSignupClick}
-                  className="px-4 py-2 rounded-lg font-medium transition-colors text-gray-700 hover:bg-gray-100"
+                  className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-full transition-all duration-300 transform hover:scale-105"
                 >
                   Sign Up
                 </button>
