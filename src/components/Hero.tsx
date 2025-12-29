@@ -33,11 +33,12 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
         <div className="mb-8">
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 leading-tight">
-            <span className="inline-block animate-fade-in-up">FUEL</span>{' '}
-            <span className="inline-block animate-fade-in-up delay-200">YOUR</span>
+            <span className="inline-block animate-fade-in-up">HYDRATION</span>{' '}
+            <span className="inline-block animate-fade-in-up delay-200">YOU</span>
             <br />
-            <span className="inline-block animate-fade-in-up delay-400 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
-              POTENTIAL
+            <span className="inline-block animate-fade-in-up delay-400">DONT HAVE TO</span>{' '}
+            <span className="inline-block animate-fade-in-up delay-600 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
+              DRINK
             </span>
           </h1>
           <p className="text-xl md:text-2xl text-white/90 max-w-3xl mx-auto animate-fade-in-up delay-600">
