@@ -175,16 +175,13 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
         );
       case 'how-to-use':
         return (
-          <ol className="space-y-3">
+          <div className="space-y-3">
             {product.howToUse.map((step, index) => (
-              <li key={index} className="flex items-start space-x-3">
-                <span className="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-medium">
-                  {index + 1}
-                </span>
-                <span className="text-gray-600">{step}</span>
-              </li>
+              <p key={index} className="text-gray-600 leading-relaxed">
+                {step}
+              </p>
             ))}
-          </ol>
+          </div>
         );
       case 'ingredients':
         return (
