@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { ArrowDown, Zap } from 'lucide-react';
 
 interface HeroProps {
@@ -16,7 +17,12 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
   }, []);
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <motion.section 
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
+    >
       <div 
         className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600"
         style={{
@@ -63,7 +69,7 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
       <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
         <ArrowDown className="w-8 h-8 text-white/70" />
       </div>
-    </section>
+    </motion.section>
   );
 };
 
