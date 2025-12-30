@@ -318,8 +318,8 @@ const LearnMore = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Eddy Gibore</h3>
               <p className="text-lg font-semibold text-blue-600 mb-4">COO</p>
               <p className="text-gray-600">
-                Runs day-to-day execution and owns operations, timelines, supply chain, 
-                fulfillment, and systems. Eddy ensures ideas actually get done and keeps 
+                Runs day-to-day execution and manages operations, timelines, supply chain, 
+                fulfillment, and systems. Eddy ensures ideas get done and keeps 
                 Zelyte running smoothly at every level.
               </p>
             </div>
@@ -332,9 +332,9 @@ const LearnMore = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Viraj Multani</h3>
               <p className="text-lg font-semibold text-green-600 mb-4">CFO</p>
               <p className="text-gray-600">
-                Owns the money. Builds budgets and forecasts, tracks costs and margins, 
-                sets pricing assumptions, manages runway, and keeps financials investor-ready 
-                to support Zelyte's growth.
+                Manages financial operations and builds budgets and forecasts. Tracks costs 
+                and margins, sets pricing assumptions, manages runway, and keeps financials 
+                investor-ready to support Zelyte's growth.
               </p>
             </div>
 
@@ -346,9 +346,9 @@ const LearnMore = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Gabriel Lampe</h3>
               <p className="text-lg font-semibold text-purple-600 mb-4">CMO</p>
               <p className="text-gray-600">
-                Owns growth and brand. Leads positioning, messaging, creative, social content, 
-                ads, influencer strategy, community, and overall customer acquisition to build 
-                Zelyte's market presence.
+                Leads growth and brand strategy. Manages positioning, messaging, creative, 
+                social content, ads, influencer strategy, community, and overall customer 
+                acquisition to build Zelyte's market presence.
               </p>
             </div>
 
@@ -360,9 +360,9 @@ const LearnMore = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Adish Vimal</h3>
               <p className="text-lg font-semibold text-orange-600 mb-4">Investor Relations Manager</p>
               <p className="text-gray-600">
-                Owns investor communication and the fundraising process. Builds the investor 
+                Manages investor communication and the fundraising process. Builds the investor 
                 pipeline, manages updates, schedules calls, prepares decks and materials, 
-                and keeps relationships warm to support Zelyte's growth.
+                and maintains relationships to support Zelyte's growth.
               </p>
             </div>
 
@@ -374,7 +374,7 @@ const LearnMore = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Ryan Kosloff</h3>
               <p className="text-lg font-semibold text-cyan-600 mb-4">CTO</p>
               <p className="text-gray-600">
-                Owns the tech stack and product/website infrastructure. Builds and maintains 
+                Manages the tech stack and product/website infrastructure. Builds and maintains 
                 the site, analytics, checkout integrations, automations, and internal tools— 
                 ensuring everything is fast, secure, and scalable.
               </p>
@@ -413,9 +413,9 @@ const LearnMore = () => {
               <h3 className="text-2xl font-bold text-gray-900 mb-2">Eli Solodar</h3>
               <p className="text-lg font-semibold text-indigo-600 mb-4">Legal Advisor</p>
               <p className="text-gray-600">
-                Flags legal risk and keeps Zelyte compliant. Helps with NDAs and contracts, 
-                basic corporate setup support, IP/trademark process guidance, and reviewing 
-                terms with vendors and partners.
+                Identifies legal risks and ensures Zelyte stays compliant. Assists with NDAs 
+                and contracts, provides corporate setup support, offers IP/trademark process 
+                guidance, and reviews terms with vendors and partners.
               </p>
             </div>
 
