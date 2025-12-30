@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Star, ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { productReviewService } from '../services/productReviewService';
 import { ProductReview } from '../services/reviewService';
+import { Reveal } from './animations/Reveal';
 
 // Fallback testimonials if no reviews exist
 const fallbackTestimonials = [
@@ -45,8 +45,6 @@ const Testimonials = () => {
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [loading, setLoading] = useState(true);
-  const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
-  const { isVisible: isCarouselVisible, elementRef: carouselRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
 
   useEffect(() => {
     loadReviews();
@@ -107,30 +105,16 @@ const Testimonials = () => {
   return (
     <section id="testimonials" className="py-20 bg-gradient-to-br from-blue-50 to-cyan-50">
       <div className="max-w-7xl mx-auto px-6">
-        <div 
-          ref={headerRef as React.RefObject<HTMLDivElement>}
-          className={`text-center mb-16 transition-all duration-1000 ease-out ${
-            isHeaderVisible 
-              ? 'opacity-100 translate-y-0' 
-              : 'opacity-0 translate-y-10'
-          }`}
-        >
+        <Reveal className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
             Loved by Athletes
           </h2>
           <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Join thousands of athletes who trust Zelyte for their hydration needs
           </p>
-        </div>
+        </Reveal>
 
-        <div 
-          ref={carouselRef as React.RefObject<HTMLDivElement>}
-          className={`relative max-w-4xl mx-auto transition-all duration-1000 ease-out ${
-            isCarouselVisible 
-              ? 'opacity-100 translate-y-0 scale-100' 
-              : 'opacity-0 translate-y-10 scale-95'
-          }`}
-        >
+        <Reveal delay={0.2} className="relative max-w-4xl mx-auto">
           {loading ? (
             <div className="flex items-center justify-center py-12 bg-white rounded-3xl">
               <Loader2 className="w-8 h-8 animate-spin text-blue-600" />
@@ -205,7 +189,7 @@ const Testimonials = () => {
             )}
             </>
           )}
-        </div>
+        </Reveal>
       </div>
     </section>
   );

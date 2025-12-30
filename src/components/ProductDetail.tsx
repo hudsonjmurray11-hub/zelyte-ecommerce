@@ -5,6 +5,7 @@ import { getRelatedProducts } from '../data/products';
 import { useCart } from '../contexts/CartContext';
 import { reviewService, ProductReview } from '../services/reviewService';
 import { useAuth } from '../contexts/AuthContext';
+import { FAQAccordion } from './animations/FAQAccordion';
 
 interface ProductDetailProps {
   product: Product;
@@ -794,25 +795,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                 { id: 'faq-5', question: 'Does it dissolve?', answer: faqAnswers.q6 }
               ];
 
-              return faqQuestions.map((faq, index) => (
-                <div key={faq.id} className="bg-white rounded-lg border border-gray-200 overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                  <button
-                    onClick={() => setExpandedFAQ(expandedFAQ === faq.id ? null : faq.id)}
-                    className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
-                  >
-                    <span className="font-semibold text-gray-900 pr-4">{faq.question}</span>
-                    <ChevronDown
-                      className={`w-5 h-5 text-gray-500 transition-transform duration-200 flex-shrink-0 ${
-                        expandedFAQ === faq.id ? 'transform rotate-180' : ''
-                      }`}
-                    />
-                  </button>
-                  {expandedFAQ === faq.id && (
-                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
-                      <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
-                    </div>
-                  )}
-                </div>
+              return faqQuestions.map((faq) => (
+                <FAQAccordion
+                  key={faq.id}
+                  question={faq.question}
+                  answer={faq.answer}
+                  isOpen={expandedFAQ === faq.id}
+                  onToggle={() => setExpandedFAQ(expandedFAQ === faq.id ? null : faq.id)}
+                />
               ));
             })()}
           </div>
