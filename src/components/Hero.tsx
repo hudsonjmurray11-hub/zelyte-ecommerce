@@ -42,7 +42,9 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
             <span className="inline-block animate-fade-in-up">HYDRATION</span>{' '}
             <span className="inline-block animate-fade-in-up delay-200">YOU</span>
             <br />
-            <span className="inline-block animate-fade-in-up delay-400">DONT HAVE TO</span>{' '}
+            <span className="inline-block animate-fade-in-up delay-400">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">DONT</span> HAVE TO
+            </span>{' '}
             <span className="inline-block animate-fade-in-up delay-600 text-transparent bg-clip-text bg-gradient-to-r from-yellow-300 to-orange-300">
               DRINK
             </span>
