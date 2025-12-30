@@ -18,7 +18,6 @@ import AdminPanel from './components/Admin/AdminPanel';
 import { CartProvider } from './contexts/CartContext';
 import { AuthProvider } from './contexts/AuthContext';
 import { getProductBySlug } from './data/products';
-import { ScrollProgress } from './components/animations/ScrollProgress';
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -225,7 +224,6 @@ function App() {
   return (
     <AuthProvider>
       <CartProvider>
-        <ScrollProgress />
         {isCheckoutOpen ? (
           <Checkout onBack={handleCheckoutBack} />
         ) : currentPage === 'profile' ? (

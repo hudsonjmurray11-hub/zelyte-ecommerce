@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowDown, Zap } from 'lucide-react';
-import { MagneticButton } from './animations/MagneticButton';
 
 interface HeroProps {
   onLearnMoreClick?: () => void;
@@ -9,7 +8,6 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
   const [scrollY, setScrollY] = useState(0);
-  const shouldReduceMotion = useReducedMotion();
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -21,9 +19,9 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
   return (
     <motion.section 
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      initial={{ opacity: shouldReduceMotion ? 1 : 0, y: shouldReduceMotion ? 0 : 12 }}
+      initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: shouldReduceMotion ? 0 : 0.6, ease: 'easeOut' }}
+      transition={{ duration: 0.6, ease: 'easeOut' }}
     >
       <div 
         className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600"
@@ -55,9 +53,9 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-800">
-          <MagneticButton className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 shadow-xl">
+          <button className="bg-white text-blue-600 px-8 py-4 rounded-full font-semibold text-lg hover:bg-gray-100 transition-all duration-300 transform hover:scale-105 shadow-xl">
             Shop Collection
-          </MagneticButton>
+          </button>
           <button 
             onClick={onLearnMoreClick}
             className="border-2 border-white text-white px-8 py-4 rounded-full font-semibold text-lg hover:bg-white hover:text-blue-600 transition-all duration-300 transform hover:scale-105"
