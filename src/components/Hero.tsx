@@ -31,49 +31,94 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
         }}
       />
       
-      {/* Textured overlay pattern */}
-      <div 
-        className="absolute inset-0 opacity-30"
-        style={{
-          backgroundImage: `
-            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
-            linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-            linear-gradient(45deg, rgba(37, 99, 235, 0.2) 0%, transparent 50%)
-          `,
-          transform: `translateY(${scrollY * 0.3}px)`,
-        }}
-      />
+      {/* Liquid wave layers */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Liquid blob 1 */}
+        <div 
+          className="absolute -top-1/4 -left-1/4 w-[800px] h-[800px] rounded-full opacity-40"
+          style={{
+            background: 'radial-gradient(circle, rgba(147, 197, 253, 0.6) 0%, rgba(59, 130, 246, 0.3) 50%, transparent 70%)',
+            filter: 'blur(80px)',
+            transform: `translate(${scrollY * 0.2}px, ${scrollY * 0.3}px)`,
+            animation: 'liquid-float 20s ease-in-out infinite',
+          }}
+        />
+        
+        {/* Liquid blob 2 */}
+        <div 
+          className="absolute top-1/2 -right-1/4 w-[700px] h-[700px] rounded-full opacity-35"
+          style={{
+            background: 'radial-gradient(circle, rgba(96, 165, 250, 0.5) 0%, rgba(37, 99, 235, 0.25) 50%, transparent 70%)',
+            filter: 'blur(90px)',
+            transform: `translate(${-scrollY * 0.15}px, ${scrollY * 0.25}px)`,
+            animation: 'liquid-float 25s ease-in-out infinite reverse',
+          }}
+        />
+        
+        {/* Liquid blob 3 */}
+        <div 
+          className="absolute -bottom-1/4 left-1/3 w-[600px] h-[600px] rounded-full opacity-30"
+          style={{
+            background: 'radial-gradient(circle, rgba(147, 197, 253, 0.4) 0%, rgba(59, 130, 246, 0.2) 50%, transparent 70%)',
+            filter: 'blur(100px)',
+            transform: `translate(${scrollY * 0.1}px, ${-scrollY * 0.2}px)`,
+            animation: 'liquid-float 30s ease-in-out infinite',
+          }}
+        />
+        
+        {/* Liquid blob 4 */}
+        <div 
+          className="absolute top-1/4 right-1/3 w-[500px] h-[500px] rounded-full opacity-25"
+          style={{
+            background: 'radial-gradient(circle, rgba(96, 165, 250, 0.45) 0%, rgba(37, 99, 235, 0.2) 50%, transparent 70%)',
+            filter: 'blur(85px)',
+            transform: `translate(${-scrollY * 0.1}px, ${scrollY * 0.15}px)`,
+            animation: 'liquid-float 22s ease-in-out infinite reverse',
+          }}
+        />
+      </div>
       
-      {/* Noise texture overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.15]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-        }}
-      />
+      {/* Organic flowing wave shapes */}
+      <div className="absolute inset-0 overflow-hidden opacity-25">
+        <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 1200 800">
+          <defs>
+            <linearGradient id="liquid1" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="rgba(147, 197, 253, 0.5)" />
+              <stop offset="50%" stopColor="rgba(96, 165, 250, 0.4)" />
+              <stop offset="100%" stopColor="transparent" />
+            </linearGradient>
+            <linearGradient id="liquid2" x1="100%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="rgba(59, 130, 246, 0.4)" />
+              <stop offset="50%" stopColor="rgba(37, 99, 235, 0.3)" />
+              <stop offset="100%" stopColor="transparent" />
+            </linearGradient>
+            <filter id="blur">
+              <feGaussianBlur in="SourceGraphic" stdDeviation="25"/>
+            </filter>
+          </defs>
+          <g style={{ transform: 'translateY(0px)', animation: 'liquid-wave 15s ease-in-out infinite' }}>
+            <path 
+              d="M0,400 Q300,200 600,400 T1200,400 L1200,800 L0,800 Z" 
+              fill="url(#liquid1)" 
+              filter="url(#blur)"
+            />
+          </g>
+          <g style={{ transform: 'translateY(0px)', animation: 'liquid-wave 18s ease-in-out infinite reverse' }}>
+            <path 
+              d="M0,600 Q400,300 800,500 T1200,600 L1200,800 L0,800 Z" 
+              fill="url(#liquid2)" 
+              filter="url(#blur)"
+            />
+          </g>
+        </svg>
+      </div>
       
-      {/* Additional depth layers */}
-      <div className="absolute inset-0 opacity-25">
+      {/* Floating orbs for depth */}
+      <div className="absolute inset-0 opacity-20">
         <div className="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-xl animate-pulse" />
         <div className="absolute bottom-40 right-32 w-24 h-24 bg-white rounded-full blur-xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full blur-xl animate-pulse delay-500" />
-        <div className="absolute top-1/3 right-1/4 w-20 h-20 bg-cyan-300 rounded-full blur-2xl opacity-40 animate-pulse delay-700" />
-        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-blue-300 rounded-full blur-2xl opacity-30 animate-pulse delay-300" />
       </div>
-      
-      {/* Subtle grid pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.08]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
-        }}
-      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
         <div className="mb-8">
