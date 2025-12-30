@@ -23,6 +23,7 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
     >
+      {/* Base gradient background */}
       <div 
         className="absolute inset-0 bg-gradient-to-br from-blue-400 via-blue-500 to-blue-600"
         style={{
@@ -30,11 +31,49 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
         }}
       />
       
-      <div className="absolute inset-0 opacity-20">
+      {/* Textured overlay pattern */}
+      <div 
+        className="absolute inset-0 opacity-30"
+        style={{
+          backgroundImage: `
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
+            linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
+            linear-gradient(45deg, rgba(37, 99, 235, 0.2) 0%, transparent 50%)
+          `,
+          transform: `translateY(${scrollY * 0.3}px)`,
+        }}
+      />
+      
+      {/* Noise texture overlay */}
+      <div 
+        className="absolute inset-0 opacity-[0.15]"
+        style={{
+          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
+        }}
+      />
+      
+      {/* Additional depth layers */}
+      <div className="absolute inset-0 opacity-25">
         <div className="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-xl animate-pulse" />
         <div className="absolute bottom-40 right-32 w-24 h-24 bg-white rounded-full blur-xl animate-pulse delay-1000" />
         <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full blur-xl animate-pulse delay-500" />
+        <div className="absolute top-1/3 right-1/4 w-20 h-20 bg-cyan-300 rounded-full blur-2xl opacity-40 animate-pulse delay-700" />
+        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-blue-300 rounded-full blur-2xl opacity-30 animate-pulse delay-300" />
       </div>
+      
+      {/* Subtle grid pattern */}
+      <div 
+        className="absolute inset-0 opacity-[0.08]"
+        style={{
+          backgroundImage: `
+            linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
+          `,
+          backgroundSize: '50px 50px',
+        }}
+      />
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
         <div className="mb-8">
