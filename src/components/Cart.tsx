@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X, Plus, Minus, ShoppingBag, ArrowRight } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 
@@ -33,8 +33,10 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => 
             <button
               onClick={onClose}
               className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label="Close cart"
+              type="button"
             >
-              <X className="w-6 h-6 text-gray-500" />
+              <X className="w-6 h-6 text-gray-500" aria-hidden="true" />
             </button>
           </div>
 
@@ -64,16 +66,20 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => 
                         onClick={() => updateQuantity(item.id, item.quantity - 1)}
                         disabled={isLoading}
                         className="p-1 hover:bg-gray-100 disabled:opacity-50 rounded-full transition-colors"
+                        aria-label={`Decrease quantity of ${item.name}`}
+                        type="button"
                       >
-                        <Minus className="w-4 h-4 text-gray-600" />
+                        <Minus className="w-4 h-4 text-gray-600" aria-hidden="true" />
                       </button>
-                      <span className="w-8 text-center font-medium">{item.quantity}</span>
+                      <span className="w-8 text-center font-medium" aria-label={`Quantity: ${item.quantity}`}>{item.quantity}</span>
                       <button
                         onClick={() => updateQuantity(item.id, item.quantity + 1)}
                         disabled={isLoading}
                         className="p-1 hover:bg-gray-100 disabled:opacity-50 rounded-full transition-colors"
+                        aria-label={`Increase quantity of ${item.name}`}
+                        type="button"
                       >
-                        <Plus className="w-4 h-4 text-gray-600" />
+                        <Plus className="w-4 h-4 text-gray-600" aria-hidden="true" />
                       </button>
                     </div>
                     
@@ -81,8 +87,10 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => 
                       onClick={() => removeFromCart(item.id)}
                       disabled={isLoading}
                       className="p-2 hover:bg-red-50 disabled:opacity-50 text-red-500 rounded-full transition-colors"
+                      aria-label={`Remove ${item.name} from cart`}
+                      type="button"
                     >
-                      <X className="w-4 h-4" />
+                      <X className="w-4 h-4" aria-hidden="true" />
                     </button>
                   </div>
                 ))}
@@ -100,9 +108,11 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => 
               <button
                 onClick={onProceedToCheckout}
                 className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-6 rounded-lg font-semibold transition-colors duration-200 flex items-center justify-center space-x-2"
+                aria-label={`Proceed to checkout with ${getTotalItems()} items`}
+                type="button"
               >
                 <span>Proceed to Checkout</span>
-                <ArrowRight className="w-5 h-5" />
+                <ArrowRight className="w-5 h-5" aria-hidden="true" />
               </button>
             </div>
           )}

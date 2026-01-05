@@ -2,6 +2,7 @@ import React, { createContext, useContext, useState, useEffect, ReactNode } from
 import { useAuth } from './AuthContext';
 import { cartService } from '../services/cartService';
 import { OrderItem } from '../config/supabase';
+import { trackAddToCart } from '../utils/analytics';
 
 export interface CartItem {
   id: string;
@@ -127,9 +128,13 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
             ...newItems[existingItemIndex],
             quantity: newItems[existingItemIndex].quantity + 1
           };
+          // Track analytics
+          trackAddToCart(item.id, item.name, item.price, newItems[existingItemIndex].quantity);
           return newItems;
         } else {
           // New item, add to cart
+          // Track analytics
+          trackAddToCart(item.id, item.name, item.price, 1);
           return [...prevItems, { ...item, quantity: 1 }];
         }
       });

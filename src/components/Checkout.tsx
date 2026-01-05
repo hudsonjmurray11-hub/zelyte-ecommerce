@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ArrowLeft, CheckCircle, Loader2, AlertCircle } from 'lucide-react';
 import { useCart } from '../contexts/CartContext';
 import { useAuth } from '../contexts/AuthContext';
 import { orderService } from '../services/orderService';
 import { OrderItem } from '../config/supabase';
+import { trackBeginCheckout, trackPurchase } from '../utils/analytics';
 
 interface CheckoutProps {
   onBack: () => void;
@@ -16,6 +17,21 @@ const Checkout: React.FC<CheckoutProps> = ({ onBack }) => {
   const [orderComplete, setOrderComplete] = useState(false);
   const [orderId, setOrderId] = useState('');
   const [error, setError] = useState('');
+
+  // Track checkout begin
+  useEffect(() => {
+    if (cartItems.length > 0) {
+      trackBeginCheckout(
+        getTotalPrice(),
+        cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        }))
+      );
+    }
+  }, []);
   const [formData, setFormData] = useState({
     email: user?.email || '',
     firstName: '',
@@ -88,6 +104,18 @@ const Checkout: React.FC<CheckoutProps> = ({ onBack }) => {
       if (orderError || !order) {
         throw new Error('Failed to create order');
       }
+
+      // Track purchase
+      trackPurchase(
+        order.id,
+        getTotalPrice(),
+        cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+        }))
+      );
 
       // Clear the cart
       await clearCart();

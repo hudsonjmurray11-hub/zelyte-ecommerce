@@ -5,6 +5,7 @@ import { getRelatedProducts } from '../data/products';
 import { useCart } from '../contexts/CartContext';
 import { reviewService, ProductReview } from '../services/reviewService';
 import { useAuth } from '../contexts/AuthContext';
+import { trackProductView, trackBeginCheckout } from '../utils/analytics';
 
 interface ProductDetailProps {
   product: Product;
@@ -79,10 +80,43 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   };
 
   useEffect(() => {
+    // Update document title
     document.title = `${product.name} - Zelyte`;
+    
+    // Update meta description
+    const metaDescription = document.querySelector('meta[name="description"]');
+    if (metaDescription) {
+      metaDescription.setAttribute('content', `${product.summary || product.description.substring(0, 160)} - ${product.category} - $${product.price}`);
+    }
+    
+    // Update Open Graph tags
+    const ogTitle = document.querySelector('meta[property="og:title"]');
+    if (ogTitle) {
+      ogTitle.setAttribute('content', `${product.name} - Zelyte`);
+    }
+    
+    const ogDescription = document.querySelector('meta[property="og:description"]');
+    if (ogDescription) {
+      ogDescription.setAttribute('content', product.summary || product.description.substring(0, 160));
+    }
+    
+    const ogImage = document.querySelector('meta[property="og:image"]');
+    if (ogImage && product.images && product.images.length > 0) {
+      ogImage.setAttribute('content', `${window.location.origin}${product.images[0]}`);
+    }
+    
+    // Update canonical URL
+    const canonical = document.querySelector('link[rel="canonical"]');
+    if (canonical) {
+      canonical.setAttribute('href', `${window.location.origin}/product/${product.slug}`);
+    }
+    
+    // Track product view
+    trackProductView(product.id, product.name, product.price);
+    
     setSelectedImage(0); // Reset to first image when product changes
     loadReviews();
-  }, [product.id]);
+  }, [product.id, product.name, product.summary, product.description, product.images, product.slug, product.price]);
 
   // Ensure selectedImage is always within bounds
   useEffect(() => {
@@ -338,9 +372,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
 
             {/* Reviews List */}
             {loadingReviews ? (
-              <div className="text-center py-12">
-                <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-                <p className="mt-4 text-gray-600">Loading reviews...</p>
+              <div className="space-y-6" role="status" aria-label="Loading reviews">
+                {[1, 2, 3].map((i) => (
+                  <div key={i} className="border-b border-gray-200 pb-6">
+                    <div className="flex items-start space-x-3 mb-3">
+                      <div className="w-10 h-10 bg-gray-200 rounded-full animate-pulse"></div>
+                      <div className="flex-1">
+                        <div className="h-4 bg-gray-200 rounded w-1/4 mb-2 animate-pulse"></div>
+                        <div className="h-3 bg-gray-200 rounded w-1/3 animate-pulse"></div>
+                      </div>
+                    </div>
+                    <div className="h-4 bg-gray-200 rounded w-full mb-2 animate-pulse"></div>
+                    <div className="h-4 bg-gray-200 rounded w-3/4 animate-pulse"></div>
+                  </div>
+                ))}
               </div>
             ) : reviews.length === 0 ? (
               <div className="text-center py-12">
@@ -488,15 +533,17 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                     onClick={() => setSelectedImage((selectedImage - 1 + product.images.length) % product.images.length)}
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-20"
                     aria-label="Previous image"
+                    type="button"
                   >
-                    <ChevronLeft className="w-6 h-6 text-gray-700" />
+                    <ChevronLeft className="w-6 h-6 text-gray-700" aria-hidden="true" />
                   </button>
                   <button
                     onClick={() => setSelectedImage((selectedImage + 1) % product.images.length)}
                     className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white rounded-full p-2 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-20"
                     aria-label="Next image"
+                    type="button"
                   >
-                    <ChevronRight className="w-6 h-6 text-gray-700" />
+                    <ChevronRight className="w-6 h-6 text-gray-700" aria-hidden="true" />
                   </button>
                 </>
               )}
@@ -504,14 +551,16 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
               {product.images && product.images.length > 0 ? (
                 <img
                   src={product.images[selectedImage] || product.images[0]}
-                  alt={product.name}
+                  alt={`${product.name} - ${product.category} electrolyte pouch`}
                   className="w-full h-full object-contain p-8"
+                  loading="eager"
+                  decoding="async"
                   onError={(e) => {
                     console.error('Failed to load image:', product.images[selectedImage], 'Selected index:', selectedImage, 'All images:', product.images);
                   }}
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                <div className="w-full h-full flex items-center justify-center text-gray-400" role="status" aria-label="Loading product image">
                   <p>Loading image...</p>
                 </div>
               )}
@@ -528,8 +577,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                   >
                     <img
                       src={image}
-                      alt={`${product.name} ${index + 1}`}
+                      alt={`${product.name} - View ${index + 1}`}
                       className="w-full h-full object-contain p-2"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </button>
                 ))}
@@ -799,16 +850,20 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                   <button
                     onClick={() => setExpandedFAQ(expandedFAQ === faq.id ? null : faq.id)}
                     className="w-full px-6 py-4 flex items-center justify-between text-left hover:bg-gray-50 transition-colors"
+                    aria-expanded={expandedFAQ === faq.id}
+                    aria-controls={`faq-answer-${faq.id}`}
+                    type="button"
                   >
                     <span className="font-semibold text-gray-900 pr-4">{faq.question}</span>
                     <ChevronDown
                       className={`w-5 h-5 text-gray-500 transition-transform duration-200 flex-shrink-0 ${
                         expandedFAQ === faq.id ? 'transform rotate-180' : ''
                       }`}
+                      aria-hidden="true"
                     />
                   </button>
                   {expandedFAQ === faq.id && (
-                    <div className="px-6 py-4 bg-gray-50 border-t border-gray-200">
+                    <div id={`faq-answer-${faq.id}`} className="px-6 py-4 bg-gray-50 border-t border-gray-200" role="region">
                       <p className="text-gray-700 leading-relaxed">{faq.answer}</p>
                     </div>
                   )}
@@ -839,8 +894,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                   <div className="aspect-square bg-gray-50 rounded-lg mb-4 overflow-hidden">
                     <img
                       src={relatedProduct.images[0]}
-                      alt={relatedProduct.name}
+                      alt={`${relatedProduct.name} - ${relatedProduct.category} electrolyte pouch`}
                       className="w-full h-full object-contain p-4"
+                      loading="lazy"
+                      decoding="async"
                     />
                   </div>
                   <div className="flex items-center justify-between mb-2">

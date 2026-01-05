@@ -122,12 +122,14 @@ const Header: React.FC<HeaderProps> = ({
             <button 
               onClick={onCartClick}
               className="relative p-2 hover:bg-gray-100 rounded-full transition-colors"
+              aria-label={`Shopping cart with ${getTotalItems()} items`}
+              type="button"
             >
               <ShoppingCart className={`w-6 h-6 transition-colors duration-300 ${
                 isScrolled ? 'text-gray-700' : 'text-white'
-              }`} />
+              }`} aria-hidden="true" />
               {getTotalItems() > 0 && (
-                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center" aria-label={`${getTotalItems()} items in cart`}>
                   {getTotalItems()}
                 </span>
               )}
@@ -219,8 +221,11 @@ const Header: React.FC<HeaderProps> = ({
             className={`md:hidden transition-colors duration-300 ${
               isScrolled ? 'text-gray-900' : 'text-white'
             }`}
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+            type="button"
           >
-            {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            {isMobileMenuOpen ? <X className="w-6 h-6" aria-hidden="true" /> : <Menu className="w-6 h-6" aria-hidden="true" />}
           </button>
         </div>
 
