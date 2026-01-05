@@ -29,6 +29,16 @@ function App() {
   const [isAdmin, setIsAdmin] = useState(false);
   const [showAdminPanel, setShowAdminPanel] = useState(false);
 
+  // Scroll to top when page changes
+  useEffect(() => {
+    // Small delay to ensure page has rendered
+    const timer = setTimeout(() => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }, 100);
+    
+    return () => clearTimeout(timer);
+  }, [currentPage, currentProductSlug]);
+
   // Check if accessing admin route
   useEffect(() => {
     const checkAdminRoute = () => {
@@ -87,12 +97,10 @@ function App() {
 
   const handleAboutClick = () => {
     setCurrentPage('learn-more');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleHomeClick = () => {
     setCurrentPage('home');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleProfileClick = () => {
@@ -141,13 +149,11 @@ function App() {
   const handleProductClick = (slug: string) => {
     setCurrentProductSlug(slug);
     setCurrentPage('product');
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToHome = () => {
     setCurrentPage('home');
     setCurrentProductSlug(null);
-    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleContactClick = () => {
