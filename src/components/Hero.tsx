@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import React, { useEffect, useState, useMemo } from 'react';
+import { motion, useScroll, useTransform } from 'framer-motion';
 import { ArrowDown, Zap } from 'lucide-react';
 
 interface HeroProps {
@@ -8,6 +8,9 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
   const [scrollY, setScrollY] = useState(0);
+  const { scrollYProgress } = useScroll();
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -16,12 +19,25 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  // Generate bubbles with stable random values
+  const bubbles = useMemo(() => 
+    Array.from({ length: 20 }).map((_, i) => ({
+      id: i,
+      size: Math.random() * 60 + 20,
+      left: Math.random() * 100,
+      delay: Math.random() * 5,
+      duration: Math.random() * 3 + 4,
+      opacity: Math.random() * 0.3 + 0.1,
+    })), []
+  );
+
   return (
     <motion.section 
       className="relative min-h-screen flex items-center justify-center overflow-hidden"
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
+      style={{ opacity, scale }}
     >
       {/* Base gradient background */}
       <div 
@@ -31,47 +47,128 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
         }}
       />
       
+      {/* Animated Water Waves */}
+      <div className="absolute inset-0 overflow-hidden">
+        {/* Wave Layer 1 */}
+        <svg
+          className="absolute bottom-0 w-full h-64 opacity-30"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,60 Q300,40 600,60 T1200,60 L1200,120 L0,120 Z"
+            fill="rgba(255, 255, 255, 0.2)"
+            className="water-wave-1"
+          />
+        </svg>
+        
+        {/* Wave Layer 2 */}
+        <svg
+          className="absolute bottom-0 w-full h-64 opacity-25"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,80 Q400,50 800,80 T1200,80 L1200,120 L0,120 Z"
+            fill="rgba(255, 255, 255, 0.15)"
+            className="water-wave-2"
+          />
+        </svg>
+        
+        {/* Wave Layer 3 */}
+        <svg
+          className="absolute bottom-0 w-full h-64 opacity-20"
+          viewBox="0 0 1200 120"
+          preserveAspectRatio="none"
+        >
+          <path
+            d="M0,70 Q200,90 400,70 T800,70 T1200,70 L1200,120 L0,120 Z"
+            fill="rgba(255, 255, 255, 0.1)"
+            className="water-wave-3"
+          />
+        </svg>
+      </div>
+      
+      {/* Floating Bubbles */}
+      <div className="absolute inset-0">
+        {bubbles.map((bubble) => (
+          <motion.div
+            key={bubble.id}
+            className="absolute rounded-full bg-white/20 backdrop-blur-sm"
+            style={{
+              width: bubble.size,
+              height: bubble.size,
+              left: `${bubble.left}%`,
+              bottom: '-10%',
+            }}
+            animate={{
+              y: ['-100vh', '110vh'],
+              x: [0, bubble.size * 0.3, -bubble.size * 0.2, 0],
+              scale: [1, 1.2, 0.8, 1],
+              opacity: [bubble.opacity, bubble.opacity * 1.5, bubble.opacity * 0.5, bubble.opacity],
+            }}
+            transition={{
+              duration: bubble.duration,
+              delay: bubble.delay,
+              repeat: Infinity,
+              ease: 'linear',
+            }}
+          />
+        ))}
+      </div>
+      
+      {/* Water Ripple Effects */}
+      <div className="absolute inset-0 pointer-events-none">
+        <motion.div
+          className="absolute top-1/2 left-1/4 w-96 h-96 rounded-full bg-cyan-300/20 blur-3xl"
+          animate={{
+            scale: [1, 1.5, 1],
+            opacity: [0.2, 0.4, 0.2],
+          }}
+          transition={{
+            duration: 8,
+            repeat: Infinity,
+            ease: 'easeInOut',
+          }}
+        />
+        <motion.div
+          className="absolute bottom-1/4 right-1/3 w-80 h-80 rounded-full bg-blue-300/20 blur-3xl"
+          animate={{
+            scale: [1, 1.3, 1],
+            opacity: [0.2, 0.35, 0.2],
+          }}
+          transition={{
+            duration: 10,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 2,
+          }}
+        />
+        <motion.div
+          className="absolute top-1/3 right-1/4 w-72 h-72 rounded-full bg-white/10 blur-2xl"
+          animate={{
+            scale: [1, 1.4, 1],
+            opacity: [0.15, 0.3, 0.15],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: 'easeInOut',
+            delay: 4,
+          }}
+        />
+      </div>
+      
       {/* Textured overlay pattern */}
       <div 
-        className="absolute inset-0 opacity-30"
+        className="absolute inset-0 opacity-20"
         style={{
           backgroundImage: `
             radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
             radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
-            radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 50%),
-            linear-gradient(135deg, rgba(59, 130, 246, 0.3) 0%, transparent 50%),
-            linear-gradient(45deg, rgba(37, 99, 235, 0.2) 0%, transparent 50%)
+            radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.06) 0%, transparent 50%)
           `,
           transform: `translateY(${scrollY * 0.3}px)`,
-        }}
-      />
-      
-      {/* Noise texture overlay */}
-      <div 
-        className="absolute inset-0 opacity-[0.15]"
-        style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 400 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E")`,
-        }}
-      />
-      
-      {/* Additional depth layers */}
-      <div className="absolute inset-0 opacity-25">
-        <div className="absolute top-20 left-20 w-32 h-32 bg-white rounded-full blur-xl animate-pulse" />
-        <div className="absolute bottom-40 right-32 w-24 h-24 bg-white rounded-full blur-xl animate-pulse delay-1000" />
-        <div className="absolute top-1/2 left-1/4 w-16 h-16 bg-white rounded-full blur-xl animate-pulse delay-500" />
-        <div className="absolute top-1/3 right-1/4 w-20 h-20 bg-cyan-300 rounded-full blur-2xl opacity-40 animate-pulse delay-700" />
-        <div className="absolute bottom-1/4 left-1/3 w-28 h-28 bg-blue-300 rounded-full blur-2xl opacity-30 animate-pulse delay-300" />
-      </div>
-      
-      {/* Subtle grid pattern */}
-      <div 
-        className="absolute inset-0 opacity-[0.08]"
-        style={{
-          backgroundImage: `
-            linear-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px),
-            linear-gradient(90deg, rgba(255, 255, 255, 0.1) 1px, transparent 1px)
-          `,
-          backgroundSize: '50px 50px',
         }}
       />
 
