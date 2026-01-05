@@ -87,10 +87,12 @@ function App() {
 
   const handleAboutClick = () => {
     setCurrentPage('learn-more');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleHomeClick = () => {
     setCurrentPage('home');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleProfileClick = () => {
@@ -139,11 +141,13 @@ function App() {
   const handleProductClick = (slug: string) => {
     setCurrentProductSlug(slug);
     setCurrentPage('product');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleBackToHome = () => {
     setCurrentPage('home');
     setCurrentProductSlug(null);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
   const handleContactClick = () => {
