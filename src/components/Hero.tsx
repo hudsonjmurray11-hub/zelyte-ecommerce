@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { ArrowDown, Zap } from 'lucide-react';
 
 interface HeroProps {
@@ -8,9 +8,6 @@ interface HeroProps {
 
 const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
   const [scrollY, setScrollY] = useState(0);
-  const { scrollYProgress } = useScroll();
-  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
-  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -37,7 +34,6 @@ const Hero: React.FC<HeroProps> = ({ onLearnMoreClick }) => {
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.6, ease: 'easeOut' }}
-      style={{ opacity, scale }}
     >
       {/* Base gradient background */}
       <div 

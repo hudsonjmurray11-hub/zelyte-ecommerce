@@ -207,7 +207,7 @@ const Testimonials = () => {
             )}
             </>
           )}
-        </div>
+        </motion.div>
       </div>
     </section>
   );
