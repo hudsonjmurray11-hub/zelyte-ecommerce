@@ -91,57 +91,6 @@ html {
   }
 }
 
-/* Water Wave Animations */
-@keyframes water-wave-1 {
-  0% {
-    transform: translateX(0) translateY(0);
-  }
-  50% {
-    transform: translateX(-25px) translateY(10px);
-  }
-  100% {
-    transform: translateX(0) translateY(0);
-  }
-}
-
-@keyframes water-wave-2 {
-  0% {
-    transform: translateX(0) translateY(0);
-  }
-  50% {
-    transform: translateX(25px) translateY(-8px);
-  }
-  100% {
-    transform: translateX(0) translateY(0);
-  }
-}
-
-@keyframes water-wave-3 {
-  0% {
-    transform: translateX(0) translateY(0);
-  }
-  50% {
-    transform: translateX(-15px) translateY(5px);
-  }
-  100% {
-    transform: translateX(0) translateY(0);
-  }
-}
-
-.water-wave-1 {
-  animation: water-wave-1 8s ease-in-out infinite;
-}
-
-.water-wave-2 {
-  animation: water-wave-2 10s ease-in-out infinite;
-  animation-delay: -2s;
-}
-
-.water-wave-3 {
-  animation: water-wave-3 12s ease-in-out infinite;
-  animation-delay: -4s;
-}
-
 
 .animate-fade-in-up {
   animation: fade-in-up 0.8s ease-out forwards;
