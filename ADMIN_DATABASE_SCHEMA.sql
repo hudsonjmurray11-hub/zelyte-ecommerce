@@ -152,12 +152,15 @@ CREATE POLICY "Authenticated users can manage business settings"
 
 -- Create updated_at trigger function if it doesn't exist
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public, pg_catalog
+AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Apply updated_at triggers
 CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.products

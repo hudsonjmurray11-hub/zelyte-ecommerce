@@ -83,7 +83,11 @@ CREATE POLICY "Users can delete own cart"
 
 -- Create function to automatically create user profile
 CREATE OR REPLACE FUNCTION public.handle_new_user()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public, pg_catalog
+SECURITY DEFINER
+AS $$
 BEGIN
   INSERT INTO public.users (id, email, full_name)
   VALUES (
@@ -93,7 +97,7 @@ BEGIN
   );
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql SECURITY DEFINER;
+$$;
 
 -- Create trigger for new user signups
 CREATE TRIGGER on_auth_user_created
@@ -102,12 +106,15 @@ CREATE TRIGGER on_auth_user_created
 
 -- Create updated_at trigger function
 CREATE OR REPLACE FUNCTION public.handle_updated_at()
-RETURNS TRIGGER AS $$
+RETURNS TRIGGER
+LANGUAGE plpgsql
+SET search_path = public, pg_catalog
+AS $$
 BEGIN
   NEW.updated_at = NOW();
   RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$;
 
 -- Apply updated_at trigger to tables
 CREATE TRIGGER handle_updated_at BEFORE UPDATE ON public.users
