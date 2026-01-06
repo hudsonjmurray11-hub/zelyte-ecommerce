@@ -123,7 +123,7 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => 
               {hasSubscription() && (
                 <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
                   <div className="flex items-center justify-between text-sm">
-                    <span className="text-green-800 font-medium">Subscription Discount (15% off):</span>
+                    <span className="text-green-800 font-medium">Subscription Discount (10% off):</span>
                     <span className="text-green-800 font-bold">-${getSubscriptionDiscount().toFixed(2)}</span>
                   </div>
                 </div>

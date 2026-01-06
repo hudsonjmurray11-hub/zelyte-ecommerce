@@ -206,9 +206,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     return cartItems.reduce((total, item) => {
       let itemPrice = item.price * item.quantity;
       
-      // Apply 15% subscription discount if item is a subscription
+      // Apply 10% subscription discount if item is a subscription
       if (item.isSubscription) {
-        itemPrice = itemPrice * 0.85; // 15% off
+        itemPrice = itemPrice * 0.9; // 10% off
       }
       
       return total + itemPrice;
@@ -222,7 +222,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const subscriptionTotal = subscriptionItems.reduce((total, item) => 
       total + (item.price * item.quantity), 0
     );
-    return subscriptionTotal * 0.15; // 15% discount
+    return subscriptionTotal * 0.1; // 10% discount
   };
   
   const getSubtotal = () => {

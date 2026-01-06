@@ -22,6 +22,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   const [promoCode, setPromoCode] = useState('');
   const [appliedPromoCode, setAppliedPromoCode] = useState<string | null>(null);
   const [promoError, setPromoError] = useState('');
+  const [isSubscription, setIsSubscription] = useState(false);
   const [reviews, setReviews] = useState<ProductReview[]>([]);
   const [loadingReviews, setLoadingReviews] = useState(false);
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -52,7 +53,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
     
     // Don't allow promo codes if cart has subscriptions
     if (hasSubscription()) {
-      setPromoError('Promo codes cannot be applied to subscription orders. Subscriptions already include 15% off.');
+      setPromoError('Promo codes cannot be applied to subscription orders. Subscriptions already include 10% off.');
       setAppliedPromoCode(null);
       return;
     }
@@ -79,12 +80,27 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   const finalPrice = originalPrice - discountAmount;
 
   const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price: finalPrice / quantity, // Use discounted price per item
-      flavor: product.name
-    });
+    if (isSubscription) {
+      // Subscription: 4 tins/month, 10% off
+      const subscriptionPrice = (product.price * 4) * 0.9; // 10% off
+      addToCart({
+        id: `subscription-4-${product.id}`,
+        name: `4 Tins/Month Subscription - ${product.name}`,
+        price: subscriptionPrice / 4, // Price per tin
+        flavor: product.name,
+        isSubscription: true,
+        subscriptionFrequency: 'monthly' as const,
+        subscriptionTinsPerMonth: 4
+      });
+    } else {
+      // One-time purchase
+      addToCart({
+        id: product.id,
+        name: product.name,
+        price: finalPrice / quantity, // Use discounted price per item
+        flavor: product.name
+      });
+    }
   };
 
   useEffect(() => {
@@ -656,11 +672,46 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
             {/* Purchase Panel */}
             <div className="bg-white rounded-2xl p-6 shadow-lg">
               <div className="space-y-6">
-                {/* Quantity Selector */}
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Quantity
+                {/* Purchase Type Toggle */}
+                <div className="border-b pb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-3">
+                    Purchase Type
                   </label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      onClick={() => setIsSubscription(false)}
+                      className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                        !isSubscription
+                          ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                      }`}
+                    >
+                      One-Time Purchase
+                    </button>
+                    <button
+                      onClick={() => setIsSubscription(true)}
+                      className={`px-4 py-3 rounded-lg border-2 transition-all ${
+                        isSubscription
+                          ? 'border-blue-500 bg-blue-50 text-blue-700 font-semibold'
+                          : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                      }`}
+                    >
+                      Subscribe & Save 10%
+                    </button>
+                  </div>
+                  {isSubscription && (
+                    <p className="mt-3 text-sm text-gray-600">
+                      Get 4 tins delivered monthly. Save 10% and never run out!
+                    </p>
+                  )}
+                </div>
+
+                {/* Quantity Selector - Only show for one-time purchase */}
+                {!isSubscription && (
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Quantity
+                    </label>
                   <div className="flex items-center space-x-4">
                     <div className="flex items-center border border-gray-300 rounded-lg">
                       <button
@@ -684,9 +735,10 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                     </span>
                   </div>
                 </div>
+                )}
 
-                {/* Promo Code Section */}
-                {!hasSubscription() && (
+                {/* Promo Code Section - Only for one-time purchase */}
+                {!isSubscription && !hasSubscription() && (
                   <div className="border-t pt-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Promo Code
@@ -742,7 +794,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                       <div className="flex items-center space-x-2">
                         <Check className="w-5 h-5 text-blue-600" />
                         <span className="text-blue-800 font-medium">
-                          Subscription discount applied (15% off)
+                          Subscription discount applied (10% off)
                         </span>
                       </div>
                       <p className="text-sm text-blue-600 mt-2">
@@ -755,7 +807,27 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                 {/* Price */}
                 <div className="border-t pt-6">
                   <div className="space-y-2">
-                    {appliedPromoCode ? (
+                    {isSubscription ? (
+                      <>
+                        <div className="flex items-baseline space-x-2">
+                          <span className="text-lg text-gray-500 line-through">
+                            ${(product.price * 4).toFixed(2)}
+                          </span>
+                          <span className="text-3xl font-bold text-gray-900">
+                            ${((product.price * 4) * 0.9).toFixed(2)}
+                          </span>
+                          <span className="px-2 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">
+                            Save 10%
+                          </span>
+                        </div>
+                        <p className="text-sm text-gray-600">
+                          ${((product.price * 4) * 0.9 / 4).toFixed(2)} per tin • 4 tins/month
+                        </p>
+                        <p className="text-xs text-blue-600 mt-1">
+                          ✓ Free shipping included
+                        </p>
+                      </>
+                    ) : appliedPromoCode ? (
                       <>
                         <div className="flex items-baseline space-x-2">
                           <span className="text-lg text-gray-500 line-through">
@@ -797,76 +869,15 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                     <p className="text-orange-600 text-sm mt-1">This product will be available for purchase shortly!</p>
                   </div>
                   <button
-                    disabled
-                    className="w-full bg-gray-400 cursor-not-allowed text-white py-4 px-6 rounded-lg font-semibold text-lg opacity-60 flex items-center justify-center space-x-2"
+                    onClick={handleAddToCart}
+                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 px-6 rounded-lg font-semibold text-lg transition-colors flex items-center justify-center space-x-2"
                   >
                     <ShoppingCart className="w-5 h-5" />
-                    <span>Not Available Yet</span>
+                    <span>{isSubscription ? 'Start Subscription' : 'Add to Cart'}</span>
                   </button>
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
-        {/* Subscribe & Save Section */}
-        <div className="mb-16 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8 border-2 border-blue-200">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <div className="flex items-center space-x-3 mb-2">
-                <h2 className="text-2xl font-bold text-gray-900">Subscribe & Save 15%</h2>
-                <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                  Best Value
-                </span>
-              </div>
-              <p className="text-gray-600">Never run out. Get automatic monthly delivery and save on every order.</p>
-            </div>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-4 mb-6">
-            {[
-              { tins: 1, frequency: '2–3x/week', label: 'Casual', price: 8.50 },
-              { tins: 2, frequency: '4–5x/week', label: 'Regular', price: 17.00, popular: true },
-              { tins: 4, frequency: 'Daily', label: 'Power User', price: 34.00 }
-            ].map((plan) => (
-              <button
-                key={plan.tins}
-                onClick={() => {
-                  const subscriptionItem = {
-                    id: `subscription-${plan.tins}-${product.id}`,
-                    name: `${plan.tins} Tin${plan.tins > 1 ? 's' : ''}/Month Subscription - ${product.name}`,
-                    price: plan.price / plan.tins,
-                    flavor: product.name,
-                    isSubscription: true,
-                    subscriptionFrequency: 'monthly' as const,
-                    subscriptionTinsPerMonth: plan.tins,
-                  };
-                  addToCart(subscriptionItem);
-                  alert(`Subscription added! You'll receive ${plan.tins} tin${plan.tins > 1 ? 's' : ''} per month with 15% off.`);
-                }}
-                className={`relative p-4 rounded-xl border-2 transition-all hover:scale-105 ${
-                  plan.popular 
-                    ? 'border-blue-500 bg-blue-50' 
-                    : 'border-gray-200 bg-white hover:border-blue-300'
-                }`}
-              >
-                {plan.popular && (
-                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">
-                    Most Popular
-                  </span>
-                )}
-                <div className="text-center">
-                  <div className="text-sm text-gray-600 mb-1">{plan.label} ({plan.frequency})</div>
-                  <div className="text-2xl font-bold text-gray-900 mb-1">{plan.tins} tin{plan.tins > 1 ? 's' : ''}/month</div>
-                  <div className="text-lg font-semibold text-blue-600">${plan.price.toFixed(2)}/month</div>
-                  <div className="text-xs text-gray-500 mt-1 line-through">${(plan.price / 0.85).toFixed(2)}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-          
-          <div className="text-center text-sm text-gray-600">
-            <p>Cancel or modify your subscription anytime. Free shipping on all subscriptions.</p>
           </div>
         </div>
 
