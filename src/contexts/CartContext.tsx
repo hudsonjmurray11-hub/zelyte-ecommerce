@@ -23,7 +23,7 @@ export interface CartItem {
 interface CartContextType {
   cartItems: CartItem[];
   isLoading: boolean;
-  addToCart: (item: Omit<CartItem, 'quantity'>) => Promise<void>;
+  addToCart: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => Promise<void>;
   removeFromCart: (id: string) => Promise<void>;
   updateQuantity: (id: string, quantity: number) => Promise<void>;
   clearCart: () => Promise<void>;
@@ -116,7 +116,7 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     await loadCart();
   };
 
-  const addToCart = async (item: Omit<CartItem, 'quantity'>) => {
+  const addToCart = async (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
     try {
       setIsLoading(true);
       
@@ -126,12 +126,18 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           cartItem => cartItem.id === item.id && cartItem.flavor === item.flavor
         );
 
+        const itemQuantity = item.quantity || 1;
+
         if (existingItemIndex > -1) {
-          // Item exists, increment quantity
+          // Item exists, increment quantity (unless it's a subscription, then don't allow duplicates)
+          if (item.isSubscription) {
+            // Don't allow duplicate subscriptions
+            return prevItems;
+          }
           const newItems = [...prevItems];
           newItems[existingItemIndex] = {
             ...newItems[existingItemIndex],
-            quantity: newItems[existingItemIndex].quantity + 1
+            quantity: newItems[existingItemIndex].quantity + itemQuantity
           };
           // Track analytics
           trackAddToCart(item.id, item.name, item.price, newItems[existingItemIndex].quantity);
@@ -139,8 +145,8 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         } else {
           // New item, add to cart
           // Track analytics
-          trackAddToCart(item.id, item.name, item.price, 1);
-          return [...prevItems, { ...item, quantity: 1 }];
+          trackAddToCart(item.id, item.name, item.price, itemQuantity);
+          return [...prevItems, { ...item, quantity: itemQuantity }];
         }
       });
     } catch (error) {
