@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { Star, Zap, ShoppingCart } from 'lucide-react';
 import { motion, useInView } from 'framer-motion';
 import { useCart } from '../contexts/CartContext';
-import { useScrollAnimation } from '../hooks/useScrollAnimation';
 import { productReviewService } from '../services/productReviewService';
 import { getAllProducts } from '../data/products';
 
@@ -68,9 +67,6 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
   const [selectedProduct, setSelectedProduct] = useState(electrolytes[0]);
   const [productStats, setProductStats] = useState<{ [key: string]: { rating: number; reviews: number } }>({});
   const { addToCart } = useCart();
-  const { isVisible: isHeaderVisible, elementRef: headerRef } = useScrollAnimation({ threshold: 0.2 });
-  const { isVisible: isElectrolytesVisible, elementRef: electrolytesRef } = useScrollAnimation({ threshold: 0.1, delay: 100 });
-  const { isVisible: isCaffeineVisible, elementRef: caffeineRef } = useScrollAnimation({ threshold: 0.1, delay: 200 });
 
   useEffect(() => {
     loadProductStats();
@@ -129,18 +125,22 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
     }
   };
 
-  const headerInView = useInView(headerRef as React.RefObject<HTMLDivElement>, { once: true, amount: 0.3 });
-  const electrolytesInView = useInView(electrolytesRef as React.RefObject<HTMLDivElement>, { once: true, amount: 0.2 });
-  const caffeineInView = useInView(caffeineRef as React.RefObject<HTMLDivElement>, { once: true, amount: 0.2 });
+  const headerRef = React.useRef<HTMLDivElement>(null);
+  const electrolytesRef = React.useRef<HTMLDivElement>(null);
+  const caffeineRef = React.useRef<HTMLDivElement>(null);
+  
+  const headerInView = useInView(headerRef, { once: true, amount: 0.2, margin: '0px 0px -100px 0px' });
+  const electrolytesInView = useInView(electrolytesRef, { once: true, amount: 0.1, margin: '0px 0px -50px 0px' });
+  const caffeineInView = useInView(caffeineRef, { once: true, amount: 0.1, margin: '0px 0px -50px 0px' });
 
   return (
     <section id="products" className="py-20 bg-gray-50">
       <div className="max-w-7xl mx-auto px-6">
         <motion.div 
-          ref={headerRef as React.RefObject<HTMLDivElement>}
-          initial={{ opacity: 0, y: 50 }}
-          animate={headerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
+          ref={headerRef}
+          initial={{ opacity: 0, y: 30 }}
+          animate={headerInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
           className="text-center mb-16"
         >
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
@@ -154,15 +154,15 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
         <div className="space-y-16">
           {/* Electrolytes Section */}
           <motion.div 
-            ref={electrolytesRef as React.RefObject<HTMLDivElement>}
+            ref={electrolytesRef}
             initial={{ opacity: 0 }}
             animate={electrolytesInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4 }}
           >
             <motion.h3 
-              initial={{ opacity: 0, y: 30 }}
-              animate={electrolytesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={electrolytesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
               className="text-3xl font-bold text-gray-900 mb-8 text-center"
             >
               Electrolytes
@@ -171,10 +171,10 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
               {electrolytes.map((product, index) => (
                 <motion.div 
                   key={product.id} 
-                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                  animate={electrolytesInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.9 }}
-                  transition={{ duration: 0.6, delay: index * 0.15, ease: 'easeOut' }}
-                  whileHover={{ scale: 1.05, y: -5 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={electrolytesInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                  transition={{ duration: 0.5, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                  whileHover={{ scale: 1.02, y: -3 }}
                   className="flex flex-col h-full"
                 >
                   <div
@@ -215,15 +215,15 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
 
           {/* Electrolytes + Caffeine Section */}
           <motion.div 
-            ref={caffeineRef as React.RefObject<HTMLDivElement>}
+            ref={caffeineRef}
             initial={{ opacity: 0 }}
             animate={caffeineInView ? { opacity: 1 } : { opacity: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ duration: 0.4 }}
           >
             <motion.h3 
-              initial={{ opacity: 0, y: 30 }}
-              animate={caffeineInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
+              initial={{ opacity: 0, y: 20 }}
+              animate={caffeineInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+              transition={{ duration: 0.5, delay: 0.1, ease: [0.25, 0.1, 0.25, 1] }}
               className="text-3xl font-bold text-gray-900 mb-8 text-center"
             >
               Electrolytes + Caffeine
@@ -232,10 +232,10 @@ const ProductShowcase: React.FC<ProductShowcaseProps> = ({ onProductClick }) => 
               {electrolytesPlusCaffeine.map((product, index) => (
                 <motion.div 
                   key={product.id} 
-                  initial={{ opacity: 0, y: 50, scale: 0.9 }}
-                  animate={caffeineInView ? { opacity: 1, y: 0, scale: 1 } : { opacity: 0, y: 50, scale: 0.9 }}
-                  transition={{ duration: 0.6, delay: index * 0.15, ease: 'easeOut' }}
-                  whileHover={{ scale: 1.05, y: -5 }}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={caffeineInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+                  transition={{ duration: 0.5, delay: index * 0.1, ease: [0.25, 0.1, 0.25, 1] }}
+                  whileHover={{ scale: 1.02, y: -3 }}
                   className="flex flex-col h-full"
                 >
                   <div
