@@ -81,12 +81,12 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
 
   const handleAddToCart = () => {
     if (isSubscription) {
-      // Subscription: 4 tins/month, 10% off
-      const subscriptionPrice = (product.price * 4) * 0.9; // 10% off
+      // Subscription: 4 tins/month, store full price per tin (cart will apply 10% discount)
       addToCart({
         id: `subscription-4-${product.id}`,
         name: `4 Tins/Month Subscription - ${product.name}`,
-        price: subscriptionPrice / 4, // Price per tin
+        price: product.price, // Full price per tin (not discounted)
+        quantity: 4, // 4 tins per month
         flavor: product.name,
         isSubscription: true,
         subscriptionFrequency: 'monthly' as const,

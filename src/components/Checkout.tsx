@@ -453,15 +453,17 @@ const Checkout: React.FC<CheckoutProps> = ({ onBack }) => {
                       <p className="text-sm text-gray-500">Flavor: {item.flavor}</p>
                     )}
                     {item.isSubscription && item.subscriptionTinsPerMonth && (
-                      <p className="text-xs text-gray-500">{item.subscriptionTinsPerMonth} tin{item.subscriptionTinsPerMonth > 1 ? 's' : ''}/month</p>
+                      <p className="text-xs text-gray-500">Subscription: {item.subscriptionTinsPerMonth} tin{item.subscriptionTinsPerMonth > 1 ? 's' : ''}/month</p>
                     )}
-                    <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    {!item.isSubscription && (
+                      <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
+                    )}
                   </div>
                   <div className="text-right">
                     {item.isSubscription ? (
                       <div>
                         <p className="text-xs text-gray-500 line-through">${(item.price * item.quantity).toFixed(2)}</p>
-                        <p className="font-semibold text-gray-900">${((item.price * item.quantity) * 0.9).toFixed(2)}</p>
+                        <p className="font-semibold text-gray-900">${((item.price * item.quantity) * 0.9).toFixed(2)}/month</p>
                       </div>
                     ) : (
                       <p className="font-semibold text-gray-900">${(item.price * item.quantity).toFixed(2)}</p>

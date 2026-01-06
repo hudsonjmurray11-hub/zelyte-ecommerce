@@ -65,42 +65,48 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => 
                         <p className="text-sm text-gray-500">Flavor: {item.flavor}</p>
                       )}
                       {item.isSubscription && item.subscriptionTinsPerMonth && (
-                        <p className="text-xs text-gray-500">{item.subscriptionTinsPerMonth} tin{item.subscriptionTinsPerMonth > 1 ? 's' : ''}/month</p>
+                        <p className="text-xs text-gray-500">Subscription: {item.subscriptionTinsPerMonth} tin{item.subscriptionTinsPerMonth > 1 ? 's' : ''}/month</p>
                       )}
                       <div className="flex items-center space-x-2">
-                        {item.isSubscription && (
-                          <span className="text-sm text-gray-500 line-through">${(item.price * item.quantity).toFixed(2)}</span>
+                        {item.isSubscription ? (
+                          <>
+                            <span className="text-sm text-gray-500 line-through">${(item.price * item.quantity).toFixed(2)}</span>
+                            <p className="text-lg font-bold text-blue-600">
+                              ${((item.price * item.quantity) * 0.9).toFixed(2)}/month
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-lg font-bold text-blue-600">
+                            ${(item.price * item.quantity).toFixed(2)}
+                          </p>
                         )}
-                        <p className="text-lg font-bold text-blue-600">
-                          ${item.isSubscription 
-                            ? ((item.price * item.quantity) * 0.85).toFixed(2)
-                            : (item.price * item.quantity).toFixed(2)}
-                        </p>
                       </div>
                     </div>
                     
-                    {/* Quantity Controls */}
-                    <div className="flex items-center space-x-2">
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                        disabled={isLoading}
-                        className="p-1 hover:bg-gray-100 disabled:opacity-50 rounded-full transition-colors"
-                        aria-label={`Decrease quantity of ${item.name}`}
-                        type="button"
-                      >
-                        <Minus className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                      </button>
-                      <span className="w-8 text-center font-medium" aria-label={`Quantity: ${item.quantity}`}>{item.quantity}</span>
-                      <button
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                        disabled={isLoading}
-                        className="p-1 hover:bg-gray-100 disabled:opacity-50 rounded-full transition-colors"
-                        aria-label={`Increase quantity of ${item.name}`}
-                        type="button"
-                      >
-                        <Plus className="w-4 h-4 text-gray-600" aria-hidden="true" />
-                      </button>
-                    </div>
+                    {/* Quantity Controls - Only show for non-subscription items */}
+                    {!item.isSubscription && (
+                      <div className="flex items-center space-x-2">
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                          disabled={isLoading}
+                          className="p-1 hover:bg-gray-100 disabled:opacity-50 rounded-full transition-colors"
+                          aria-label={`Decrease quantity of ${item.name}`}
+                          type="button"
+                        >
+                          <Minus className="w-4 h-4 text-gray-600" aria-hidden="true" />
+                        </button>
+                        <span className="w-8 text-center font-medium" aria-label={`Quantity: ${item.quantity}`}>{item.quantity}</span>
+                        <button
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                          disabled={isLoading}
+                          className="p-1 hover:bg-gray-100 disabled:opacity-50 rounded-full transition-colors"
+                          aria-label={`Increase quantity of ${item.name}`}
+                          type="button"
+                        >
+                          <Plus className="w-4 h-4 text-gray-600" aria-hidden="true" />
+                        </button>
+                      </div>
+                    )}
                     
                     <button
                       onClick={() => removeFromCart(item.id)}
