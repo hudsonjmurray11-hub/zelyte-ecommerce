@@ -15,6 +15,9 @@ export interface CartItem {
   variantId?: string;
   productId?: string;
   handle?: string;
+  isSubscription?: boolean;
+  subscriptionFrequency?: 'monthly';
+  subscriptionTinsPerMonth?: number;
 }
 
 interface CartContextType {
@@ -27,6 +30,8 @@ interface CartContextType {
   getTotalPrice: () => number;
   getTotalItems: () => number;
   refreshCart: () => Promise<void>;
+  getSubscriptionDiscount: () => number;
+  hasSubscription: () => boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -198,7 +203,34 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const getTotalPrice = () => {
+    return cartItems.reduce((total, item) => {
+      let itemPrice = item.price * item.quantity;
+      
+      // Apply 15% subscription discount if item is a subscription
+      if (item.isSubscription) {
+        itemPrice = itemPrice * 0.85; // 15% off
+      }
+      
+      return total + itemPrice;
+    }, 0);
+  };
+  
+  const getSubscriptionDiscount = () => {
+    const subscriptionItems = cartItems.filter(item => item.isSubscription);
+    if (subscriptionItems.length === 0) return 0;
+    
+    const subscriptionTotal = subscriptionItems.reduce((total, item) => 
+      total + (item.price * item.quantity), 0
+    );
+    return subscriptionTotal * 0.15; // 15% discount
+  };
+  
+  const getSubtotal = () => {
     return cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
+  };
+  
+  const hasSubscription = () => {
+    return cartItems.some(item => item.isSubscription);
   };
 
   const getTotalItems = () => {
@@ -215,7 +247,9 @@ export const CartProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       clearCart,
       getTotalPrice,
       getTotalItems,
-      refreshCart
+      refreshCart,
+      getSubscriptionDiscount,
+      hasSubscription
     }}>
       {children}
     </CartContext.Provider>

@@ -9,7 +9,7 @@ interface CartProps {
 }
 
 const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => {
-  const { cartItems, updateQuantity, removeFromCart, getTotalPrice, getTotalItems, isLoading } = useCart();
+  const { cartItems, updateQuantity, removeFromCart, getTotalPrice, getTotalItems, isLoading, getSubscriptionDiscount, hasSubscription } = useCart();
 
   if (!isOpen) return null;
 
@@ -53,11 +53,30 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => 
                 {cartItems.map((item) => (
                   <div key={`${item.id}-${item.flavor || 'default'}`} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
                     <div className="flex-1">
-                      <h3 className="font-medium text-gray-900">{item.name}</h3>
+                      <div className="flex items-center space-x-2 mb-1">
+                        <h3 className="font-medium text-gray-900">{item.name}</h3>
+                        {item.isSubscription && (
+                          <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                            Subscribe & Save
+                          </span>
+                        )}
+                      </div>
                       {item.flavor && (
                         <p className="text-sm text-gray-500">Flavor: {item.flavor}</p>
                       )}
-                      <p className="text-lg font-bold text-blue-600">${item.price.toFixed(2)}</p>
+                      {item.isSubscription && item.subscriptionTinsPerMonth && (
+                        <p className="text-xs text-gray-500">{item.subscriptionTinsPerMonth} tin{item.subscriptionTinsPerMonth > 1 ? 's' : ''}/month</p>
+                      )}
+                      <div className="flex items-center space-x-2">
+                        {item.isSubscription && (
+                          <span className="text-sm text-gray-500 line-through">${(item.price * item.quantity).toFixed(2)}</span>
+                        )}
+                        <p className="text-lg font-bold text-blue-600">
+                          ${item.isSubscription 
+                            ? ((item.price * item.quantity) * 0.85).toFixed(2)
+                            : (item.price * item.quantity).toFixed(2)}
+                        </p>
+                      </div>
                     </div>
                     
                     {/* Quantity Controls */}
@@ -101,6 +120,14 @@ const Cart: React.FC<CartProps> = ({ isOpen, onClose, onProceedToCheckout }) => 
           {/* Footer */}
           {cartItems.length > 0 && (
             <div className="border-t border-gray-200 p-6">
+              {hasSubscription() && (
+                <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-green-800 font-medium">Subscription Discount (15% off):</span>
+                    <span className="text-green-800 font-bold">-${getSubscriptionDiscount().toFixed(2)}</span>
+                  </div>
+                </div>
+              )}
               <div className="flex items-center justify-between mb-4">
                 <span className="text-lg font-medium text-gray-900">Total:</span>
                 <span className="text-2xl font-bold text-blue-600">${getTotalPrice().toFixed(2)}</span>

@@ -11,7 +11,7 @@ interface CheckoutProps {
 }
 
 const Checkout: React.FC<CheckoutProps> = ({ onBack }) => {
-  const { cartItems, getTotalPrice, getTotalItems, isLoading, clearCart } = useCart();
+  const { cartItems, getTotalPrice, getTotalItems, isLoading, clearCart, getSubscriptionDiscount, hasSubscription } = useCart();
   const { user } = useAuth();
   const [isProcessing, setIsProcessing] = useState(false);
   const [orderComplete, setOrderComplete] = useState(false);
@@ -441,15 +441,32 @@ const Checkout: React.FC<CheckoutProps> = ({ onBack }) => {
                     />
                   )}
                   <div className="flex-1">
-                    <h3 className="font-medium text-gray-900">{item.name}</h3>
+                    <div className="flex items-center space-x-2 mb-1">
+                      <h3 className="font-medium text-gray-900">{item.name}</h3>
+                      {item.isSubscription && (
+                        <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded-full">
+                          Subscribe & Save
+                        </span>
+                      )}
+                    </div>
                     {item.flavor && (
                       <p className="text-sm text-gray-500">Flavor: {item.flavor}</p>
                     )}
+                    {item.isSubscription && item.subscriptionTinsPerMonth && (
+                      <p className="text-xs text-gray-500">{item.subscriptionTinsPerMonth} tin{item.subscriptionTinsPerMonth > 1 ? 's' : ''}/month</p>
+                    )}
                     <p className="text-sm text-gray-600">Quantity: {item.quantity}</p>
                   </div>
-                  <p className="font-semibold text-gray-900">
-                    ${(item.price * item.quantity).toFixed(2)}
-                  </p>
+                  <div className="text-right">
+                    {item.isSubscription ? (
+                      <div>
+                        <p className="text-xs text-gray-500 line-through">${(item.price * item.quantity).toFixed(2)}</p>
+                        <p className="font-semibold text-gray-900">${((item.price * item.quantity) * 0.85).toFixed(2)}</p>
+                      </div>
+                    ) : (
+                      <p className="font-semibold text-gray-900">${(item.price * item.quantity).toFixed(2)}</p>
+                    )}
+                  </div>
                 </div>
               ))}
             </div>
@@ -457,8 +474,14 @@ const Checkout: React.FC<CheckoutProps> = ({ onBack }) => {
             <div className="border-t border-gray-200 pt-4 space-y-2">
               <div className="flex justify-between text-gray-600">
                 <span>Subtotal</span>
-                <span>${getTotalPrice().toFixed(2)}</span>
+                <span>${cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}</span>
               </div>
+              {hasSubscription() && (
+                <div className="flex justify-between text-green-600 font-medium">
+                  <span>Subscription Discount (15% off)</span>
+                  <span>-${getSubscriptionDiscount().toFixed(2)}</span>
+                </div>
+              )}
               <div className="flex justify-between text-gray-600">
                 <span>Shipping</span>
                 <span>Free</span>

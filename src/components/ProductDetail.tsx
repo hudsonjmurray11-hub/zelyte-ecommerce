@@ -33,7 +33,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   });
   const [submittingReview, setSubmittingReview] = useState(false);
   const [expandedFAQ, setExpandedFAQ] = useState<string | null>('faq-0'); // First question expanded by default
-  const { addToCart, getTotalItems } = useCart();
+  const { addToCart, getTotalItems, hasSubscription } = useCart();
   const { user } = useAuth();
 
   const relatedProducts = getRelatedProducts(product, 3);
@@ -49,6 +49,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
 
   const handleApplyPromoCode = () => {
     const code = promoCode.trim().toUpperCase();
+    
+    // Don't allow promo codes if cart has subscriptions
+    if (hasSubscription()) {
+      setPromoError('Promo codes cannot be applied to subscription orders. Subscriptions already include 15% off.');
+      setAppliedPromoCode(null);
+      return;
+    }
+    
     if (validPromoCodes[code]) {
       setAppliedPromoCode(code);
       setPromoError('');
@@ -678,54 +686,71 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                 </div>
 
                 {/* Promo Code Section */}
-                <div className="border-t pt-6">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Promo Code
-                  </label>
-                  {!appliedPromoCode ? (
-                    <div className="flex space-x-2">
-                      <input
-                        type="text"
-                        value={promoCode}
-                        onChange={(e) => {
-                          setPromoCode(e.target.value);
-                          setPromoError('');
-                        }}
-                        onKeyPress={(e) => {
-                          if (e.key === 'Enter') {
-                            handleApplyPromoCode();
-                          }
-                        }}
-                        placeholder="Enter promo code"
-                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                      <button
-                        onClick={handleApplyPromoCode}
-                        className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
-                      >
-                        Apply
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                {!hasSubscription() && (
+                  <div className="border-t pt-6">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Promo Code
+                    </label>
+                    {!appliedPromoCode ? (
+                      <div className="flex space-x-2">
+                        <input
+                          type="text"
+                          value={promoCode}
+                          onChange={(e) => {
+                            setPromoCode(e.target.value);
+                            setPromoError('');
+                          }}
+                          onKeyPress={(e) => {
+                            if (e.key === 'Enter') {
+                              handleApplyPromoCode();
+                            }
+                          }}
+                          placeholder="Enter promo code"
+                          className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        />
+                        <button
+                          onClick={handleApplyPromoCode}
+                          className="px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg font-medium transition-colors"
+                        >
+                          Apply
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-lg">
+                        <div className="flex items-center space-x-2">
+                          <Check className="w-5 h-5 text-green-600" />
+                          <span className="text-green-800 font-medium">
+                            Code "{appliedPromoCode}" applied! {discountPercent * 100}% off
+                          </span>
+                        </div>
+                        <button
+                          onClick={handleRemovePromoCode}
+                          className="text-green-600 hover:text-green-800 text-sm font-medium"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    )}
+                    {promoError && (
+                      <p className="mt-2 text-sm text-red-600">{promoError}</p>
+                    )}
+                  </div>
+                )}
+                {hasSubscription() && (
+                  <div className="border-t pt-6">
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                       <div className="flex items-center space-x-2">
-                        <Check className="w-5 h-5 text-green-600" />
-                        <span className="text-green-800 font-medium">
-                          Code "{appliedPromoCode}" applied! {discountPercent * 100}% off
+                        <Check className="w-5 h-5 text-blue-600" />
+                        <span className="text-blue-800 font-medium">
+                          Subscription discount applied (15% off)
                         </span>
                       </div>
-                      <button
-                        onClick={handleRemovePromoCode}
-                        className="text-green-600 hover:text-green-800 text-sm font-medium"
-                      >
-                        Remove
-                      </button>
+                      <p className="text-sm text-blue-600 mt-2">
+                        Promo codes cannot be combined with subscription discounts.
+                      </p>
                     </div>
-                  )}
-                  {promoError && (
-                    <p className="mt-2 text-sm text-red-600">{promoError}</p>
-                  )}
-                </div>
+                  </div>
+                )}
 
                 {/* Price */}
                 <div className="border-t pt-6">
@@ -781,6 +806,67 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Subscribe & Save Section */}
+        <div className="mb-16 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-2xl p-8 border-2 border-blue-200">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <div className="flex items-center space-x-3 mb-2">
+                <h2 className="text-2xl font-bold text-gray-900">Subscribe & Save 15%</h2>
+                <span className="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                  Best Value
+                </span>
+              </div>
+              <p className="text-gray-600">Never run out. Get automatic monthly delivery and save on every order.</p>
+            </div>
+          </div>
+          
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            {[
+              { tins: 1, frequency: '2–3x/week', label: 'Casual', price: 8.50 },
+              { tins: 2, frequency: '4–5x/week', label: 'Regular', price: 17.00, popular: true },
+              { tins: 4, frequency: 'Daily', label: 'Power User', price: 34.00 }
+            ].map((plan) => (
+              <button
+                key={plan.tins}
+                onClick={() => {
+                  const subscriptionItem = {
+                    id: `subscription-${plan.tins}-${product.id}`,
+                    name: `${plan.tins} Tin${plan.tins > 1 ? 's' : ''}/Month Subscription - ${product.name}`,
+                    price: plan.price / plan.tins,
+                    flavor: product.name,
+                    isSubscription: true,
+                    subscriptionFrequency: 'monthly' as const,
+                    subscriptionTinsPerMonth: plan.tins,
+                  };
+                  addToCart(subscriptionItem);
+                  alert(`Subscription added! You'll receive ${plan.tins} tin${plan.tins > 1 ? 's' : ''} per month with 15% off.`);
+                }}
+                className={`relative p-4 rounded-xl border-2 transition-all hover:scale-105 ${
+                  plan.popular 
+                    ? 'border-blue-500 bg-blue-50' 
+                    : 'border-gray-200 bg-white hover:border-blue-300'
+                }`}
+              >
+                {plan.popular && (
+                  <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                    Most Popular
+                  </span>
+                )}
+                <div className="text-center">
+                  <div className="text-sm text-gray-600 mb-1">{plan.label} ({plan.frequency})</div>
+                  <div className="text-2xl font-bold text-gray-900 mb-1">{plan.tins} tin{plan.tins > 1 ? 's' : ''}/month</div>
+                  <div className="text-lg font-semibold text-blue-600">${plan.price.toFixed(2)}/month</div>
+                  <div className="text-xs text-gray-500 mt-1 line-through">${(plan.price / 0.85).toFixed(2)}</div>
+                </div>
+              </button>
+            ))}
+          </div>
+          
+          <div className="text-center text-sm text-gray-600">
+            <p>Cancel or modify your subscription anytime. Free shipping on all subscriptions.</p>
           </div>
         </div>
 
