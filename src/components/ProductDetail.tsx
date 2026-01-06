@@ -51,9 +51,9 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
   const handleApplyPromoCode = () => {
     const code = promoCode.trim().toUpperCase();
     
-    // Don't allow promo codes if cart has subscriptions
-    if (hasSubscription()) {
-      setPromoError('Promo codes cannot be applied to subscription orders. Subscriptions already include 10% off.');
+    // Don't allow promo codes if user is selecting subscription on this product
+    if (isSubscription) {
+      setPromoError('Promo codes cannot be applied to subscriptions. Subscriptions already include 10% off.');
       setAppliedPromoCode(null);
       return;
     }
@@ -738,7 +738,7 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                 )}
 
                 {/* Promo Code Section - Only for one-time purchase */}
-                {!isSubscription && !hasSubscription() && (
+                {!isSubscription && (
                   <div className="border-t pt-6">
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Promo Code
@@ -786,21 +786,6 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ product, onBack, onProduc
                     {promoError && (
                       <p className="mt-2 text-sm text-red-600">{promoError}</p>
                     )}
-                  </div>
-                )}
-                {hasSubscription() && (
-                  <div className="border-t pt-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                      <div className="flex items-center space-x-2">
-                        <Check className="w-5 h-5 text-blue-600" />
-                        <span className="text-blue-800 font-medium">
-                          Subscription discount applied (10% off)
-                        </span>
-                      </div>
-                      <p className="text-sm text-blue-600 mt-2">
-                        Promo codes cannot be combined with subscription discounts.
-                      </p>
-                    </div>
                   </div>
                 )}
 
